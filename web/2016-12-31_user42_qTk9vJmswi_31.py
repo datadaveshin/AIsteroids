@@ -1,5 +1,28 @@
 """
 Game player for AIsteroids
+This version has a working AI agent system
+
+http://www.codeskulptor.org/#user42_yGmOYaWRgM_98.py
+Has a hardcoded AI function that responds to rocks in the "zone" - buffer of 100 pixels
+
+    http://www.codeskulptor.org/#user42_mBAqb9RUcf_1.py
+    960 x 720
+    8 rocks
+    rock speed 2.0
+    3 min TEST: Lives=979 Score=12700
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_0.py
+    Cleaned
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_27.py
+    Has timer to print stats and 3 zones
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_30.py
+    A little better prints stats every 200 times
+    Gets 10,000 loops in 2:44 min
+
+    *http://www.codeskulptor.org/#user42_qTk9vJmswi_31.py
+    prints stats every 1000 times
 """
 
 # program template for Spaceship
@@ -11,8 +34,8 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
 # globals for user interface
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 960 #! Normally 800
+HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 score = 0
 LIVES = 1000 #! Normally 3
@@ -25,7 +48,7 @@ init_ship_angle_vel = 0.15 #! Normally 0.05
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 6
+max_rocks = 8
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
 
@@ -217,6 +240,16 @@ class Sprite:
             return True
         else:
             return False
+     
+    def zone(self, other_object, inner_buffer=1, outer_buffer=100):
+        tot_distance = dist(self.pos, other_object.pos)
+        combined_radii = self.radius + other_object.radius
+        inner_edge = combined_radii + inner_buffer
+        outer_edge = combined_radii + outer_buffer
+        if tot_distance > inner_edge and tot_distance < outer_edge:
+            return True
+        else:
+            return False
 
 # mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
@@ -247,6 +280,32 @@ def group_collide(group, other_object):
                                            explosion_image2, explosion_info,
                                            explosion_sound))
                 return collision
+            
+            
+def group_collide(group, other_object):
+        copy_of_group = set(group)
+        collision = False
+        for item in copy_of_group:
+            collision = item.collide(other_object)
+            if collision:
+                explosion_group.add(Sprite(item.pos, item.vel, 0, 0,
+                                           explosion_image, explosion_info,
+                                           explosion_sound))
+                group.remove(item)
+                if other_object.image == ship_image:
+                    explosion_group_ship.add(Sprite(my_ship.pos, my_ship.vel, 0, 0,
+                                           explosion_image2, explosion_info,
+                                           explosion_sound))
+                return collision
+
+            
+def group_zone(group, other_object, inner_buff, outer_buff):
+        copy_of_group = set(group)
+        zone = False
+        for item in copy_of_group:
+            zone = item.zone(other_object, inner_buff, outer_buff)
+            if zone:
+                return zone
 
 def group_group_collide(group, other_group):
         copy_of_group = set(group)
@@ -267,6 +326,56 @@ def process_sprite_group(a_set, canvas):
         if time_to_die:
             a_set.remove(item)
 
+zone1_count = 0
+zone2_count = 0
+zone3_count = 0
+def ai(in_zone1, in_zone2, in_zone3):
+    """ 
+    Put your AI function here
+    """
+    global zone1_count, zone2_count, zone3_count
+    global ship_angle_vel
+
+    thrustit = random.randint(0, 1000)
+    
+    # Check if in zone
+    if in_zone1:
+        zone1_count += 1
+    if in_zone2:
+        zone2_count += 1    
+    if in_zone3:
+        zone3_count += 1
+    
+    # Count times in zone
+    if (time - 0.05) % 1000 == 0:
+        print "\nGame Loops:", time - 0.05, "Times Killed:", -(lives - 1000) 
+        print "Rocks Destroyed:", score / 100
+        print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
+    
+    
+    # Make Ship Thrust
+    if thrustit < 500 and in_zone2 or in_zone1:
+        my_ship.thrusters(True)
+    elif thrustit < 10:
+        my_ship.thrusters(True)
+    else:
+        my_ship.thrusters(False)
+        
+    # Make Ship Shoot
+    shootit = random.randint(0, 1000)
+    if in_zone2 and shootit < 500:
+        my_ship.shoot()
+    elif shootit < 5:
+        my_ship.shoot()
+    
+    # Make Ship Turn
+    if -0.1 < ship_angle_vel < 0.1:
+        direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
+        ship_angle_vel += direction
+    else: 
+        ship_angle_vel = 0
+    
+            
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
 
@@ -319,7 +428,8 @@ def draw(canvas):
         # check if game over
         if lives <= 0:
             started = False
-
+            
+        
     # draw splash screen if not started
     if not started:
         rock_group = set([])
@@ -327,7 +437,20 @@ def draw(canvas):
         canvas.draw_image(splash_image, splash_info.get_center(),
                           splash_info.get_size(), [WIDTH / 2, HEIGHT / 2],
                           splash_info.get_size())
+    
+    
+    """ Use this for AI if you want"""
+    # check if rocks are in the ship's zone
+    rocks_in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+    rocks_in_zone2 = group_zone(rock_group, my_ship, 51, 100)
+    rocks_in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+    
+        
+    if started:
+        """Call your AI code here"""
+        ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
 
+    
 # timer handler that spawns a rock
 def rock_spawner():
     global rock_group, score, rock_vel_multiplier_factor
@@ -370,6 +493,7 @@ def keyup(key):
         ship_angle_vel -= init_ship_angle_vel
     elif key == simplegui.KEY_MAP["left"]:
         ship_angle_vel += init_ship_angle_vel
+        
 
 # initialize frame
 frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
@@ -379,11 +503,13 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
 # register handlers
 frame.set_draw_handler(draw)
-frame.set_keyup_handler(keyup)
-frame.set_keydown_handler(keydown)
+#frame.set_keyup_handler(keyup)
+#frame.set_keydown_handler(keydown)
 frame.set_mouseclick_handler(click)
 timer = simplegui.create_timer(1000.0, rock_spawner)
 
 # get things rolling
 timer.start()
 frame.start()
+print "Game Started"
+

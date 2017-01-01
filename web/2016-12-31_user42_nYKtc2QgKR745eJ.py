@@ -1,30 +1,71 @@
 """
 Game player for AIsteroids
+This version has a working AI agent system
+
+http://www.codeskulptor.org/#user42_yGmOYaWRgM_98.py
+Has a hardcoded AI function that responds to rocks in the "zone" - buffer of 100 pixels
+
+    http://www.codeskulptor.org/#user42_mBAqb9RUcf_1.py
+    960 x 720
+    8 rocks
+    rock speed 2.0
+    3 min TEST: Lives=979 Score=12700
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_0.py
+    Cleaned
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_27.py
+    Has timer to print stats and 3 zones
+
+    http://www.codeskulptor.org/#user42_qTk9vJmswi_30.py
+    A little better prints stats every 200 times
+    Gets 10,000 loops in 2:44 min
+
+    *http://www.codeskulptor.org/#user42_qTk9vJmswi_31.py
+    prints stats every 1000 times
+
+        http://www.codeskulptor.org/#user42_mUuqeilYb0_1.py
+        This is disconnected from the FRAME plays but gets time out errors
+
+        http://www.codeskulptor.org/#user42_Eulu17py1i_0.py
+        Improving, got to 20000 runs
+
+        *http://www.codeskulptor.org/#user42_VNWxeB9Bld_0.py
+        Stops at 10000 runs, more stable than above
+        10,000 loops in 16-17 sec
+
+            http://www.codeskulptor.org/#user42_nYKtc2QgKR745eJ.py
+            Has game player turned off so it just sits still
+            Used to see if stats match what's expected
 """
+
 
 # program template for Spaceship
 import math
 import random
+import codeskulptor
+
 try:
     import simplegui
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
-
+codeskulptor.set_timeout(120)
 # globals for user interface
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 960 #! Normally 800
+HEIGHT = 720 #! Normally 600
+ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 score = 0
-lives = 3
+LIVES = 1000 #! Normally 3
 time = 0.05
 started = False
 
 # globals for logic
 ship_angle_vel = 0
-init_ship_angle_vel = 0.05
+init_ship_angle_vel = 0.15 #! Normally 0.05
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 6
+max_rocks = 8
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
 
@@ -35,13 +76,14 @@ while extra_life_multple < 1000000:
     extra_life_multple += 1000
     extra_lives_set.add(extra_life_multple)
 life_given = False
+lives = LIVES #! For AI setup to easily change number of lives
 
 # initialize sets
 rock_group = set([])
 missile_group = set([])
 explosion_group = set([])
 explosion_group_ship = set([])
-
+print "hi"
 # class definitions
 class ImageInfo:
     def __init__(self, center, size, radius=0, lifespan=None, animated=False):
@@ -154,10 +196,10 @@ class Ship:
     def thrusters(self, upkey_or_downkey):
         global acc
         self.thrust = upkey_or_downkey
-        if self.thrust:
-            ship_thrust_sound.play()
-        else:
-            ship_thrust_sound.rewind()
+        #@!if self.thrust:
+        #@!    ship_thrust_sound.play()
+        #@!else:
+        #@!    ship_thrust_sound.rewind()
 
     def shoot(self):
         global a_missile, missile_extra_vel
@@ -183,9 +225,9 @@ class Sprite:
         self.lifespan = info.get_lifespan()
         self.animated = info.get_animated()
         self.age = 0
-        if sound:
-            sound.rewind()
-            sound.play()
+        #@!if sound:
+        #@!    sound.rewind()
+        #@!    sound.play()
 
     def draw(self, canvas):
         if self.animated:
@@ -215,6 +257,16 @@ class Sprite:
             return True
         else:
             return False
+     
+    def zone(self, other_object, inner_buffer=1, outer_buffer=100):
+        tot_distance = dist(self.pos, other_object.pos)
+        combined_radii = self.radius + other_object.radius
+        inner_edge = combined_radii + inner_buffer
+        outer_edge = combined_radii + outer_buffer
+        if tot_distance > inner_edge and tot_distance < outer_edge:
+            return True
+        else:
+            return False
 
 # mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
@@ -226,9 +278,9 @@ def click(pos):
     if (not started) and inwidth and inheight:
         started = True
         score = 0
-        lives = 3
-        soundtrack.rewind()
-        soundtrack.play()
+        lives = LIVES
+        #@! soundtrack.rewind()
+        #@! soundtrack.play()
 
 def group_collide(group, other_object):
         copy_of_group = set(group)
@@ -245,6 +297,32 @@ def group_collide(group, other_object):
                                            explosion_image2, explosion_info,
                                            explosion_sound))
                 return collision
+            
+            
+def group_collide(group, other_object):
+        copy_of_group = set(group)
+        collision = False
+        for item in copy_of_group:
+            collision = item.collide(other_object)
+            if collision:
+                explosion_group.add(Sprite(item.pos, item.vel, 0, 0,
+                                           explosion_image, explosion_info,
+                                           explosion_sound))
+                group.remove(item)
+                if other_object.image == ship_image:
+                    explosion_group_ship.add(Sprite(my_ship.pos, my_ship.vel, 0, 0,
+                                           explosion_image2, explosion_info,
+                                           explosion_sound))
+                return collision
+
+            
+def group_zone(group, other_object, inner_buff, outer_buff):
+        copy_of_group = set(group)
+        zone = False
+        for item in copy_of_group:
+            zone = item.zone(other_object, inner_buff, outer_buff)
+            if zone:
+                return zone
 
 def group_group_collide(group, other_group):
         copy_of_group = set(group)
@@ -257,22 +335,77 @@ def group_group_collide(group, other_group):
                 group.discard(item)
         return num_collisions
 
-def process_sprite_group(a_set, canvas):
+#@! def process_sprite_group(a_set, canvas):
+def process_sprite_group(a_set):
     copy_of_a_set = set(a_set)
     for item in copy_of_a_set:
-        item.draw(canvas)
+        #@! item.draw(canvas)
         time_to_die = item.update()
         if time_to_die:
             a_set.remove(item)
 
-def draw(canvas):
+zone1_count = 0
+zone2_count = 0
+zone3_count = 0
+def ai(in_zone1, in_zone2, in_zone3):
+    """ 
+    Put your AI function here
+    """
+    global zone1_count, zone2_count, zone3_count
+    global ship_angle_vel
+
+    thrustit = random.randint(0, 1000)
+    # print time
+    
+    # Check if in zone
+    if in_zone1:
+        zone1_count += 1
+    if in_zone2:
+        zone2_count += 1    
+    if in_zone3:
+        zone3_count += 1
+    
+    # Count times in zone
+    if (time - 0.05) % 100 == 0:
+        print "\nGame Loops:", time - 0.05, "Times Killed:", -(lives - 1000) 
+        print "Rocks Destroyed:", score / 100
+        print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
+    
+    '''
+    # Make Ship Thrust
+    if thrustit < 500 and in_zone2 or in_zone1:
+        my_ship.thrusters(True)
+    elif thrustit < 10:
+        my_ship.thrusters(True)
+    else:
+        my_ship.thrusters(False)
+        
+    # Make Ship Shoot
+    shootit = random.randint(0, 1000)
+    if in_zone2 and shootit < 500:
+        my_ship.shoot()
+    elif shootit < 5:
+        my_ship.shoot()
+    
+    # Make Ship Turn
+    if -0.1 < ship_angle_vel < 0.1:
+        direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
+        ship_angle_vel += direction
+    else: 
+        ship_angle_vel = 0
+    '''
+            
+#@! def draw(canvas):
+def draw():
     global time, started, lives, score, rock_group, life_given
 
     # animiate background
     time += 1
+    
     wtime = (time / 4) % WIDTH
     center = debris_info.get_center()
     size = debris_info.get_size()
+    '''#@!
     canvas.draw_image(nebula_image, nebula_info.get_center(),
                       nebula_info.get_size(), [WIDTH / 2, HEIGHT / 2],
                       [WIDTH, HEIGHT])
@@ -280,19 +413,28 @@ def draw(canvas):
                       wtime - WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
     canvas.draw_image(debris_image, center, size, (
                       wtime + WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
-
+    '''#@!
+    
     # draw score and lives
+    '''#@!
     canvas.draw_text("Lives", (WIDTH * 0.25, HEIGHT * 0.1), 28, "White")
     canvas.draw_text(str(lives), (WIDTH * 0.25, HEIGHT * 0.2), 42, "White")
     canvas.draw_text("Score", (WIDTH * 0.67, HEIGHT * 0.1), 28, "White")
     canvas.draw_text(str(score), (WIDTH * 0.67, HEIGHT * 0.2), 42, "White")
+    '''
 
     # draw ship and sprites
-    my_ship.draw(canvas)
+    #@! my_ship.draw(canvas)
+    '''#@!
     process_sprite_group(rock_group, canvas)
     process_sprite_group(missile_group, canvas)
     process_sprite_group(explosion_group, canvas)
     process_sprite_group(explosion_group_ship, canvas)
+    '''
+    process_sprite_group(rock_group)
+    process_sprite_group(missile_group)
+    process_sprite_group(explosion_group)
+    process_sprite_group(explosion_group_ship)
 
     # update ship and sprites
     my_ship.update()
@@ -317,19 +459,36 @@ def draw(canvas):
         # check if game over
         if lives <= 0:
             started = False
-
+            
+        
     # draw splash screen if not started
     if not started:
         rock_group = set([])
         soundtrack.pause()
+        '''#@!
         canvas.draw_image(splash_image, splash_info.get_center(),
                           splash_info.get_size(), [WIDTH / 2, HEIGHT / 2],
                           splash_info.get_size())
+        '''
+    
+    
+    """ Use this for AI if you want"""
+    # check if rocks are in the ship's zone
+    rocks_in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+    rocks_in_zone2 = group_zone(rock_group, my_ship, 51, 100)
+    rocks_in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+    
+        
+    if started:
+        """Call your AI code here"""
+        ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
 
+    
 # timer handler that spawns a rock
 def rock_spawner():
     global rock_group, score, rock_vel_multiplier_factor
-    rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
+    # rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
+    rock_vel_multiplier = ROCK_SPEED #! for the ai game
     if len(rock_group) <= max_rocks - 1 and started:
         a_rock_pos = [random.choice(range(WIDTH)),
                       random.choice(range(HEIGHT))]
@@ -367,20 +526,45 @@ def keyup(key):
         ship_angle_vel -= init_ship_angle_vel
     elif key == simplegui.KEY_MAP["left"]:
         ship_angle_vel += init_ship_angle_vel
+        
 
 # initialize frame
-frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
+# frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
 
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
 # register handlers
-frame.set_draw_handler(draw)
-frame.set_keyup_handler(keyup)
-frame.set_keydown_handler(keydown)
-frame.set_mouseclick_handler(click)
-timer = simplegui.create_timer(1000.0, rock_spawner)
+#frame.set_draw_handler(draw)
+#frame.set_keyup_handler(keyup)
+#frame.set_keydown_handler(keydown)
+#frame.set_mouseclick_handler(click)
 
+
+"""
+for x in xrange(10000):
+    if x % 10 == 0:
+        # print x
+        rock_spawner()
+    draw(
+"""
+
+for x in xrange(10):
+    click([WIDTH / 2, HEIGHT / 2])
+    print "\n\n\n####### game_started #######"
+    y = 0
+    while y < 1000:
+        y += 1
+        draw()
+        if y % 10 == 0:
+            # print y
+            rock_spawner()
+        
+
+#timer = simplegui.create_timer(1000.0, rock_spawner)
+#timer2 = simplegui.create_timer(1, draw)
 # get things rolling
-timer.start()
-frame.start()
+#timer.start()
+#timer2.start()
+#frame.start()
+

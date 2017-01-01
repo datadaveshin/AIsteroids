@@ -1,26 +1,29 @@
+# http://www.codeskulptor.org/#user42_yGmOYaWRgM_103.py
 """
 Game player for AIsteroids
+This version has a working AI agent system
 """
 
 # program template for Spaceship
 import math
 import random
-# try:
-#     import simplegui
-# except ImportError:
-import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+try:
+    import simplegui
+except ImportError:
+    import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
 # globals for user interface
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 960 #! Normally 800
+HEIGHT = 680 #! Normally 600
+ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 score = 0
-lives = 3
+LIVES = 1000 #! Normally 3
 time = 0.05
 started = False
 
 # globals for logic
 ship_angle_vel = 0
-init_ship_angle_vel = 0.05
+init_ship_angle_vel = 0.15 #! Normally 0.05
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
@@ -35,6 +38,7 @@ while extra_life_multple < 1000000:
     extra_life_multple += 1000
     extra_lives_set.add(extra_life_multple)
 life_given = False
+lives = LIVES #! For AI setup to easily change number of lives
 
 # initialize sets
 rock_group = set([])
@@ -73,44 +77,34 @@ class ImageInfo:
 # debris images - debris1_brown.png, debris2_brown.png, debris3_brown.png, debris4_brown.png
 #                 debris1_blue.png, debris2_blue.png, debris3_blue.png, debris4_blue.png, debris_blend.png
 debris_info = ImageInfo([320, 240], [640, 480])
-#debris_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png")
-debris_image = simplegui.load_image("http://127.0.0.1:8080/debris2_blue.png")
+debris_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png")
 
 # nebula images - nebula_brown.png, nebula_blue.png
 nebula_info = ImageInfo([400, 300], [800, 600])
-# nebula_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/nebula_blue.f2014.png")
-nebula_image = simplegui.load_image("http://127.0.0.1:8080/nebula_blue.f2014.png")
+nebula_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/nebula_blue.f2014.png")
 
 # splash image
 splash_info = ImageInfo([200, 150], [400, 300])
-# splash_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/splash.png")
-splash_image = simplegui.load_image("http://127.0.0.1:8080/splash.png")
+splash_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/splash.png")
 
 # ship image
 ship_info = ImageInfo([45, 45], [90, 90], 35)
-# ship_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/double_ship.png")
-ship_image = simplegui.load_image("http://127.0.0.1:8080/double_ship.png")
+ship_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/double_ship.png")
 
 # missile image - shot1.png, shot2.png, shot3.png
 missile_info = ImageInfo([5,5], [10, 10], 3, 50)
-# missile_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/shot2.png")
-missile_image = simplegui.load_image("http://127.0.0.1:8080/shot2.png")
+missile_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/shot2.png")
 
 # asteroid images - asteroid_blue.png, asteroid_brown.png, asteroid_blend.png
 asteroid_info = ImageInfo([45, 45], [90, 90], 40)
-# asteroid_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blue.png")
-asteroid_image = simplegui.load_image("http://127.0.0.1:8080/asteroid_blue.png")
-# asteroid_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_brown.png")
-asteroid_image2 = simplegui.load_image("http://127.0.0.1:8080/asteroid_brown.png")
-# asteroid_image3 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blend.png")
-asteroid_image3 = simplegui.load_image("http://127.0.0.1:8080/asteroid_blend.png")
+asteroid_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blue.png")
+asteroid_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_brown.png")
+asteroid_image3 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blend.png")
 
 # animated explosion - explosion_orange.png, explosion_blue.png, explosion_blue2.png, explosion_alpha.png
 explosion_info = ImageInfo([64, 64], [128, 128], 17, 24, True)
-# explosion_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_alpha.png")
-explosion_image = simplegui.load_image("http://127.0.0.1:8080/explosion_alpha.png")
-# explosion_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_orange.png")
-explosion_image2 = simplegui.load_image("http://127.0.0.1:8080/explosion_orange.png")
+explosion_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_alpha.png")
+explosion_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_orange.png")
 
 # sound assets purchased from sounddogs.com, please do not redistribute
 soundtrack = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/soundtrack.mp3")
@@ -225,6 +219,14 @@ class Sprite:
             return True
         else:
             return False
+     
+    def zone(self, other_object, buffer=100):
+        tot_distance = dist(self.pos, other_object.pos)
+        combined_radii = self.radius + other_object.radius
+        if tot_distance < combined_radii + buffer:
+            return True
+        else:
+            return False
 
 # mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
@@ -236,7 +238,7 @@ def click(pos):
     if (not started) and inwidth and inheight:
         started = True
         score = 0
-        lives = 3
+        lives = LIVES
         soundtrack.rewind()
         soundtrack.play()
 
@@ -255,6 +257,25 @@ def group_collide(group, other_object):
                                            explosion_image2, explosion_info,
                                            explosion_sound))
                 return collision
+
+def group_zone(group, other_object):
+        copy_of_group = set(group)
+        zone = False
+        for item in copy_of_group:
+            zone = item.zone(other_object)
+            if zone:
+                
+                """
+                explosion_group.add(Sprite(item.pos, item.vel, 0, 0,
+                                           explosion_image, explosion_info,
+                                           explosion_sound))
+                group.remove(item)
+                if other_object.image == ship_image:
+                    explosion_group_ship.add(Sprite(my_ship.pos, my_ship.vel, 0, 0,
+                                           explosion_image2, explosion_info,
+                                           explosion_sound))
+                """
+                return zone
 
 def group_group_collide(group, other_group):
         copy_of_group = set(group)
@@ -275,6 +296,47 @@ def process_sprite_group(a_set, canvas):
         if time_to_die:
             a_set.remove(item)
 
+def ai(in_zone):
+    """ 
+    Put your AI function here
+    """
+    # print in_zone
+    
+    global ship_angle_vel
+    
+    thrustit = random.randint(0, 1000)
+    if thrustit < 500 and in_zone:
+        my_ship.thrusters(True)
+    elif thrustit < 50:
+        my_ship.thrusters(True)
+    else:
+        my_ship.thrusters(False)
+        
+    shootit = random.randint(0, 1000)
+    if in_zone and shootit < 500:
+        my_ship.shoot()
+    elif shootit < 5:
+        my_ship.shoot()
+    
+    # print ship_angle_vel
+    if -0.8 < ship_angle_vel < 0.8 and in_zone:
+        # print ship_angle_vel
+        direction = random.choice([-0.1,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.1,0.1])
+        ship_angle_vel += direction
+    else:
+        ship_angle_vel = 0
+    
+    if (-0.8 < ship_angle_vel < 0.8):
+        direction = random.choice([-0.1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1])
+        ship_angle_vel += direction
+    else: 
+        ship_angle_vel = 0
+    
+    # my_ship.angle += direction
+    # print my_ship.angle
+    
+    
+            
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
 
@@ -327,7 +389,11 @@ def draw(canvas):
         # check if game over
         if lives <= 0:
             started = False
-
+            
+    # check if rocks are in the ship's zone
+    rocks_in_zone = group_zone(rock_group, my_ship)
+        
+        
     # draw splash screen if not started
     if not started:
         rock_group = set([])
@@ -335,11 +401,18 @@ def draw(canvas):
         canvas.draw_image(splash_image, splash_info.get_center(),
                           splash_info.get_size(), [WIDTH / 2, HEIGHT / 2],
                           splash_info.get_size())
+        
+    """ Putting some tests here"""
+    if started:
+    #! AI HERE
+        ai(rocks_in_zone)
 
+    
 # timer handler that spawns a rock
 def rock_spawner():
     global rock_group, score, rock_vel_multiplier_factor
-    rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
+    # rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
+    rock_vel_multiplier = ROCK_SPEED #! for the ai game
     if len(rock_group) <= max_rocks - 1 and started:
         a_rock_pos = [random.choice(range(WIDTH)),
                       random.choice(range(HEIGHT))]
@@ -377,6 +450,7 @@ def keyup(key):
         ship_angle_vel -= init_ship_angle_vel
     elif key == simplegui.KEY_MAP["left"]:
         ship_angle_vel += init_ship_angle_vel
+        
 
 # initialize frame
 frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
@@ -394,3 +468,4 @@ timer = simplegui.create_timer(1000.0, rock_spawner)
 # get things rolling
 timer.start()
 frame.start()
+
