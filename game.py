@@ -650,7 +650,7 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 #frame.set_mouseclick_handler(click)
 
 
-for x in xrange(2):
+for x in xrange(10):
     display = False
     click([WIDTH / 2, HEIGHT / 2])
     print "\n\n\n####### game_started #######"
