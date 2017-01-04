@@ -1,6 +1,5 @@
 """
 Game player for AIsteroids
-This version has a working AI agent system
 """
 
 import math
