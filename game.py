@@ -3,7 +3,6 @@ Game player for AIsteroids
 This version has a working AI agent system
 """
 
-# program template for Spaceship
 import math
 import random
 
@@ -16,43 +15,49 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
     from SimpleGUICS2Pygame.simplegui_lib_loader import Loader
 
-
-# globals for user interface
+# Globals for user interface
 WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
-score = 0
 LIVES = 1000 #! Normally 3
+
+# Globals for logic
+score = 0
 time = 0.05
 started = False
-
-# globals for logic
 ship_angle_vel = 0
 init_ship_angle_vel = 0.15 #! Normally 0.05
+
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
 max_rocks = 8
 rock_spawn_padding = 5
-rock_vel_multiplier_factor = 0.35
 
+rock_vel_multiplier_factor = 0.35
 free_lives = False
 extra_lives_set = set([])
 extra_life_multple = 0
+
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
     extra_lives_set.add(extra_life_multple)
+
 life_given = False
 lives = LIVES #! For AI setup to easily change number of lives
 
-# initialize sets
+# Initialize sets
 rock_group = set([])
 missile_group = set([])
 explosion_group = set([])
 explosion_group_ship = set([])
 print "hi"
-# class definitions
+
+# Class definitions
 class ImageInfo:
+    '''
+    For manipulating images used in the game
+    '''
     def __init__(self, center, size, radius=0, lifespan=None, animated=False):
         self.center = center
         self.size = size
@@ -78,47 +83,48 @@ class ImageInfo:
     def get_animated(self):
         return self.animated
 
-# art assets created by Kim Lathrop, may be freely re-used in non-commercial projects, please credit Kim
-# debris images - debris1_brown.png, debris2_brown.png, debris3_brown.png, debris4_brown.png
-#                 debris1_blue.png, debris2_blue.png, debris3_blue.png, debris4_blue.png, debris_blend.png
+
+# Art assets created by Kim Lathrop, may be freely re-used in non-commercial projects, please credit Kim
+# Debris images: debris1_brown.png, debris2_brown.png, debris3_brown.png, debris4_brown.png,
+#     debris1_blue.png, debris2_blue.png, debris3_blue.png, debris4_blue.png, debris_blend.png
 debris_info = ImageInfo([320, 240], [640, 480])
 debris_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/debris2_blue.png")
 
-# nebula images - nebula_brown.png, nebula_blue.png
+# Nebula images: nebula_brown.png, nebula_blue.png
 nebula_info = ImageInfo([400, 300], [800, 600])
 nebula_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/nebula_blue.f2014.png")
 
-# splash image
+# Splash image:
 splash_info = ImageInfo([200, 150], [400, 300])
 splash_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/splash.png")
 
-# ship image
+# Ship image:
 ship_info = ImageInfo([45, 45], [90, 90], 35)
 ship_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/double_ship.png")
 
-# missile image - shot1.png, shot2.png, shot3.png
+# Missile images: shot1.png, shot2.png, shot3.png
 missile_info = ImageInfo([5,5], [10, 10], 3, 50)
 missile_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/shot2.png")
 
-# asteroid images - asteroid_blue.png, asteroid_brown.png, asteroid_blend.png
+# Asteroid images: asteroid_blue.png, asteroid_brown.png, asteroid_blend.png
 asteroid_info = ImageInfo([45, 45], [90, 90], 40)
 asteroid_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blue.png")
 asteroid_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_brown.png")
 asteroid_image3 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/asteroid_blend.png")
 
-# animated explosion - explosion_orange.png, explosion_blue.png, explosion_blue2.png, explosion_alpha.png
+# Animated explosions: explosion_orange.png, explosion_blue.png, explosion_blue2.png, explosion_alpha.png
 explosion_info = ImageInfo([64, 64], [128, 128], 17, 24, True)
 explosion_image = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_alpha.png")
 explosion_image2 = simplegui.load_image("http://commondatastorage.googleapis.com/codeskulptor-assets/lathrop/explosion_orange.png")
 
-# sound assets purchased from sounddogs.com, please do not redistribute
+# Sound assets purchased from sounddogs.com, please do not redistribute
 soundtrack = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/soundtrack.ogg")
 missile_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/missile.ogg")
 missile_sound.set_volume(.5)
 ship_thrust_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/thrust.ogg")
 explosion_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/explosion.ogg")
 
-# helper functions to handle transformations
+# Helper functions to handle transformations
 def angle_to_vector(ang):
     return [math.cos(ang), math.sin(ang)]
 
@@ -127,8 +133,15 @@ def dist(p, q):
 
 # Ship class
 class Ship:
+    """
+    Ship class generates player's ship.
+    """
     global ship_angle_vel
     def __init__(self, pos, vel, angle, image, info):
+        """
+        Initializes ship's state - position, initial physics,
+        and radius for calculations.
+        """
         self.pos = [pos[0],pos[1]]
         self.vel = [vel[0],vel[1]]
         self.thrust = False
@@ -140,6 +153,9 @@ class Ship:
         self.launch = False
 
     def draw(self,canvas):
+        """
+        Draws ship shown with fire when thrusting, without fire when not.
+        """
         if self.thrust:
             canvas.draw_image(self.image, [self.image_center[0] +
             self.image_size[0], self.image_center[1]],self.image_size,
@@ -149,6 +165,9 @@ class Ship:
             self.pos, self.image_size, self.angle)
 
     def update(self):
+        """
+        Update's ships position and associated physics with each game loop.
+        """
         global friction, acc
         forward = angle_to_vector(self.angle)
         if self.thrust:
@@ -161,6 +180,9 @@ class Ship:
         self.angle += ship_angle_vel
 
     def thrusters(self, upkey_or_downkey):
+        """
+        Used to add sound when thrusters are turned on.
+        """
         global acc
         self.thrust = upkey_or_downkey
         if display:
@@ -170,6 +192,10 @@ class Ship:
                 ship_thrust_sound.rewind()
 
     def shoot(self):
+        """
+        Fires a missle in the direction that the ship is pointing.
+        Max number of allowed missles defined in globals above.
+        """
         global a_missile, missile_extra_vel
         forward = angle_to_vector(self.angle)
         missile_pos = [self.pos[0] + forward[0] * self.radius, self.pos[1] +
@@ -181,6 +207,9 @@ class Ship:
 
 # Sprite class
 class Sprite:
+    """
+    Generates non-ship sprites, ie. asteroids and bullets.
+    """
     def __init__(self, pos, vel, ang, ang_vel, image, info, sound = None):
         self.image = image
         self.pos = [pos[0],pos[1]]
@@ -199,6 +228,10 @@ class Sprite:
                 sound.play()
 
     def draw(self, canvas):
+        """
+        Redraws the sprite on each update.
+        If animated, a change to the tile center is made.
+        """
         if self.animated:
             canvas.draw_image(self.image, [self.image_center[0] +
                               self.image_size[0] * (self.age + 1),
@@ -209,6 +242,10 @@ class Sprite:
                               self.pos, self.image_size, self.angle)
 
     def update(self):
+        """
+        Updates each sprite's position and age.
+        Age is used for defining how long a missle would stay on screen.
+        """
         pos_or_neg = random.choice([-1, 1])
         self.pos[0] = (self.pos[0] + self.vel[0]) % WIDTH
         self.pos[1] = (self.pos[1] + self.vel[1]) % HEIGHT
@@ -220,6 +257,11 @@ class Sprite:
             return False
 
     def collide(self, other_object, buffer=0):
+        """
+        Returns true if ship or sprite, and another sprite
+        collide. This is based on the radii of their combined
+        images.
+        """
         tot_distance = dist(self.pos, other_object.pos)
         combined_radii = self.radius + other_object.radius
         if tot_distance < combined_radii + buffer:
@@ -228,6 +270,11 @@ class Sprite:
             return False
 
     def zone(self, other_object, inner_buffer=1, outer_buffer=100):
+        """
+        Returns true if ship or sprite, and another sprite
+        collide. This is based on the radii of their combined
+        images.
+        """
         tot_distance = dist(self.pos, other_object.pos)
         combined_radii = self.radius + other_object.radius
         inner_edge = combined_radii + inner_buffer
@@ -237,8 +284,13 @@ class Sprite:
         else:
             return False
 
-# mouseclick handlers that reset UI and conditions whether splash image is drawn
+
+# Mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
+    """
+    Can start the game via a mouse click handler.
+    Or for this game, by calling click and giving a position for the ship. 
+    """
     global started, score, lives
     center = [WIDTH / 2, HEIGHT / 2]
     size = splash_info.get_size()
@@ -251,6 +303,7 @@ def click(pos):
         if display:
             soundtrack.rewind()
             soundtrack.play()
+
 
 def group_collide(group, other_object):
         copy_of_group = set(group)
