@@ -1,3 +1,6 @@
+
+
+
 http://www.codeskulptor.org/#user42_yGmOYaWRgM_84.py
 Has a basic AI function added that moves the ship randomly
 
@@ -10,55 +13,70 @@ Has a basic AI function added that moves the ship randomly
 
 http://www.codeskulptor.org/#user42_yGmOYaWRgM_98.py
 Has a hardcoded AI function that responds to rocks in the "zone" - buffer of 100 pixels
- 
+
     http://www.codeskulptor.org/#user42_mBAqb9RUcf_1.py
     960 x 720
     8 rocks
     rock speed 2.0
-    3 min TEST: Lives=979 Score=12700 
-    
-    http://www.codeskulptor.org/#user42_qTk9vJmswi_0.py
-    Cleaned
+    3 min TEST: Lives=979 Score=12700
 
-    http://www.codeskulptor.org/#user42_qTk9vJmswi_27.py
-    Has timer to print stats and 3 zones
+        http://www.codeskulptor.org/#user42_qTk9vJmswi_0.py
+        Cleaned
 
-    http://www.codeskulptor.org/#user42_qTk9vJmswi_30.py
-    A little better prints stats every 200 times
-    Gets 10,000 loops in 2:44 min
-    
-    *http://www.codeskulptor.org/#user42_qTk9vJmswi_31.py
-    prints stats every 1000 times
+        http://www.codeskulptor.org/#user42_qTk9vJmswi_27.py
+        Has timer to print stats and 3 zones
 
-        http://www.codeskulptor.org/#user42_mUuqeilYb0_1.py
-        This is disconnected from the FRAME plays but gets time out errors
-        
-        http://www.codeskulptor.org/#user42_Eulu17py1i_0.py
-        Improving, got to 20000 runs
+        http://www.codeskulptor.org/#user42_qTk9vJmswi_30.py
+        A little better prints stats every 200 times
+        Gets 10,000 loops in 2:44 min
 
-        *http://www.codeskulptor.org/#user42_VNWxeB9Bld_0.py 
-        Stops at 10000 runs, more stable than above
-        10,000 loops in 16-17 sec
+        *http://www.codeskulptor.org/#user42_qTk9vJmswi_31.py
+        prints stats every 1000 times
 
-            http://www.codeskulptor.org/#user42_nYKtc2QgKR745eJ.py
-            Has game player turned off so it just sits still
-            Used to see if stats match what's expected
+            http://www.codeskulptor.org/#user42_mUuqeilYb0_1.py
+            This is disconnected from the FRAME plays but gets time out errors
 
-        *http://www.codeskulptor.org/#user42_VNWxeB9Bld_2.py
-        Basically the same as above, but called for 50,000 loops
-        50,000 loops in 2:08
-        
-        *http://www.codeskulptor.org/#user42_VNWxeB9Bld_3.py
-        Set for 100,000 loops
-        100,000 in 6:28 min
+                http://www.codeskulptor.org/#user42_Eulu17py1i_0.py
+                Improving, got to 20000 runs
 
-         
+                *http://www.codeskulptor.org/#user42_VNWxeB9Bld_0.py
+                Stops at 10000 runs, more stable than above
+                10,000 loops in 16-17 sec
+
+                    http://www.codeskulptor.org/#user42_nYKtc2QgKR745eJ.py
+                    Has game player turned off so it just sits still
+                    Used to see if stats match what's expected
+
+                *http://www.codeskulptor.org/#user42_VNWxeB9Bld_2.py
+                Basically the same as above, but called for 50,000 loops
+                50,000 loops in 2:08
+
+                *http://www.codeskulptor.org/#user42_VNWxeB9Bld_3.py
+                Set for 100,000 loops
+                100,000 in 6:28 min
+
+           #IGNORE http://www.codeskulptor.org/#user42_dGOKaTVQPL_10.py
+            updated the turning to use my_ship.angle
+           
+            
+           #IGNORE http://www.codeskulptor.org/#user42_2SGwbmVPGXSu5mf_1.py
+            updated the zone function to call it 1 time, not 3
+            
+
+            http://www.codeskulptor.org/#user42_65OyoPJfKi_0.py
+            has updated turn function
+            
+
+            **http://www.codeskulptor.org/#user42_65OyoPJfKi_35.py
+            runs 10000 games in background, then turns the frame on - still in web, now have to go to local
+
+
 http://www.codeskulptor.org/#user42_yGmOYaWRgM_103.py
 Has a hardcoded AI function that responds to rocks in the "zone" - buffer of 100 pixels
 This one spins like crazy when approached
 
     http://www.codeskulptor.org/#user42_0VPz1ch6fZobwWj.py
-    800, 600 grid 
+    800, 600 grid
     rock speed 2.0
     993 16900
 
@@ -67,6 +85,3 @@ This one spins like crazy when approached
     8 rocks
     rock speed 2.0
     3 min TEST: Lives=995 Score=16100
-    
-
- 
