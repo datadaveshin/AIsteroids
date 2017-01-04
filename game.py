@@ -289,7 +289,7 @@ class Sprite:
 def click(pos):
     """
     Can start the game via a mouse click handler.
-    Or for this game, by calling click and giving a position for the ship. 
+    Or for this game, by calling click and giving a position for the ship.
     """
     global started, score, lives
     center = [WIDTH / 2, HEIGHT / 2]
@@ -650,14 +650,6 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 #frame.set_keydown_handler(keydown)
 #frame.set_mouseclick_handler(click)
 
-
-"""
-for x in xrange(10000):
-    if x % 10 == 0:
-        # print x
-        rock_spawner()
-    draw(
-"""
 
 for x in xrange(2):
     display = False
