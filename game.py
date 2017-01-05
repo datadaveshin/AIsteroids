@@ -4,6 +4,7 @@ Game player for AIsteroids
 
 import math
 import random
+import action
 
 try:
     import simplegui
@@ -511,6 +512,7 @@ def draw_1():
     if started:
         """Call your AI code here"""
         ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
+        action.action(my_ship)
 
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
@@ -650,7 +652,7 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 #frame.set_mouseclick_handler(click)
 
 
-for x in xrange(10):
+for x in xrange(1):
     display = False
     click([WIDTH / 2, HEIGHT / 2])
     print "\n\n\n####### game_started #######"
