@@ -20,15 +20,19 @@ def action(picked_object, my_ship):
         if picked_object[0] == 'moveT':
             print "q_actionT"
             q_action = my_ship.thrusters(True)
+            return picked_object[0]
         else:
             print "q_actionF"
             q_action = my_ship.thrusters(False)
+            return 'moveF'
     else:
         random_component = random.randint(0, 100)
         print "random_component", random_component
         if random_component < 50:
             print "r_actionT"
             random_action = my_ship.thrusters(True)
+            return 'moveT'
         else:
             print "r_actionF"
             random_action = my_ship.thrusters(False)
+            retrun 'moveF'

@@ -426,7 +426,17 @@ def ai(in_zone1, in_zone2, in_zone3):
     my_ship.angle += direction
 
     #########TESTING
-    print action(['moveT', 12], my_ship)
+    state = get_state(rocks_in_zone2)
+    max_q = lookup_q_values(state)
+    post_action_move = action(max_q, my_ship)
+    statePrime = get_state()
+
+    Q_key_1 = state + "__" + post_action_move
+
+
+
+
+
 
 #@! def draw(canvas):
 def draw_1():
