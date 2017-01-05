@@ -5,7 +5,6 @@ Game player for AIsteroids
 import math
 import random
 from action import action
-# print dir(action1)
 
 try:
     import simplegui
@@ -52,7 +51,6 @@ rock_group = set([])
 missile_group = set([])
 explosion_group = set([])
 explosion_group_ship = set([])
-print "hi"
 
 # Class definitions
 class ImageInfo:
@@ -286,9 +284,9 @@ class Sprite:
             return False
 
 
-# Mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
     """
+    Originally a mouseclick handler that reset UI and conditions whether splash image is drawn
     Can start the game via a mouse click handler.
     Or for this game, by calling click and giving a position for the ship.
     """
@@ -403,7 +401,7 @@ def ai(in_zone1, in_zone2, in_zone3):
         print "Rocks Destroyed:", score / 100
         print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
 
-
+    '''
     # Make Ship Thrust
     if thrustit < 500 and in_zone2 or in_zone1:
         my_ship.thrusters(True)
@@ -424,9 +422,10 @@ def ai(in_zone1, in_zone2, in_zone3):
         my_ship.angle = 0.0
     direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
     my_ship.angle += direction
+    '''
 
     #########TESTING
-    print action(['moveT', 12], my_ship)
+    print action(['moveF', 12], my_ship)
 
 #@! def draw(canvas):
 def draw_1():
