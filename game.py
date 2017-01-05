@@ -29,12 +29,13 @@ started = False
 ship_angle_vel = 0
 init_ship_angle_vel = 0.15 #! Normally 0.05
 
+pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
 max_rocks = 8
-rock_spawn_padding = 5
 
+rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
 free_lives = False
 extra_lives_set = set([])
@@ -659,7 +660,7 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
 for x in xrange(TRAINING_RUNS):
     display = False
-    click([WIDTH / 2, HEIGHT / 2])
+    click(pos)
     print "\n\n\n####### game_started #######"
     y = 0
     while y < 10000:
@@ -675,8 +676,7 @@ frame.set_draw_handler(draw)
 timer = simplegui.create_timer(1000.0, rock_spawner)
 timer.start()
 frame.start()
-click()
-click([WIDTH / 2, HEIGHT / 2])
+click(pos)
 
 
 #timer = simplegui.create_timer(1000.0, rock_spawner)
