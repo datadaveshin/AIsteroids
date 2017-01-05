@@ -323,23 +323,6 @@ def group_collide(group, other_object):
                 return collision
 
 
-def group_collide(group, other_object):
-        copy_of_group = set(group)
-        collision = False
-        for item in copy_of_group:
-            collision = item.collide(other_object)
-            if collision:
-                explosion_group.add(Sprite(item.pos, item.vel, 0, 0,
-                                           explosion_image, explosion_info,
-                                           explosion_sound))
-                group.remove(item)
-                if other_object.image == ship_image:
-                    explosion_group_ship.add(Sprite(my_ship.pos, my_ship.vel, 0, 0,
-                                           explosion_image2, explosion_info,
-                                           explosion_sound))
-                return collision
-
-
 def group_zone(group, other_object, inner_buff, outer_buff):
         copy_of_group = set(group)
         zone = False
@@ -647,16 +630,8 @@ def keyup(key):
         ship_angle_vel += init_ship_angle_vel
 
 
-# initialize frame
-
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
-
-# register handlers
-#frame.set_keyup_handler(keyup)
-#frame.set_keydown_handler(keydown)
-#frame.set_mouseclick_handler(click)
-
 
 for x in xrange(TRAINING_RUNS):
     display = False
@@ -677,11 +652,3 @@ timer = simplegui.create_timer(1000.0, rock_spawner)
 timer.start()
 frame.start()
 click(pos)
-
-
-#timer = simplegui.create_timer(1000.0, rock_spawner)
-#timer2 = simplegui.create_timer(1, draw)
-# get things rolling
-#timer.start()
-#timer2.start()
-#frame.start()
