@@ -4,7 +4,8 @@ Game player for AIsteroids
 
 import math
 import random
-import action
+from action import action
+# print dir(action1)
 
 try:
     import simplegui
@@ -424,6 +425,8 @@ def ai(in_zone1, in_zone2, in_zone3):
     direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
     my_ship.angle += direction
 
+    #########TESTING
+    print action(['moveT', 12], my_ship)
 
 #@! def draw(canvas):
 def draw_1():
@@ -512,7 +515,7 @@ def draw_1():
     if started:
         """Call your AI code here"""
         ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
-        action.action(my_ship)
+
 
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
