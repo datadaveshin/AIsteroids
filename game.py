@@ -5,7 +5,6 @@ Game player for AIsteroids
 import math
 import random
 from action import action
-# print dir(action1)
 
 try:
     import simplegui
@@ -21,6 +20,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
+TRAINING_RUNS = 2
 
 # Globals for logic
 score = 0
@@ -29,12 +29,13 @@ started = False
 ship_angle_vel = 0
 init_ship_angle_vel = 0.15 #! Normally 0.05
 
+pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
 max_rocks = 8
-rock_spawn_padding = 5
 
+rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
 free_lives = False
 extra_lives_set = set([])
@@ -52,7 +53,6 @@ rock_group = set([])
 missile_group = set([])
 explosion_group = set([])
 explosion_group_ship = set([])
-print "hi"
 
 # Class definitions
 class ImageInfo:
@@ -132,7 +132,7 @@ def angle_to_vector(ang):
 def dist(p, q):
     return math.sqrt((p[0] - q[0]) ** 2+(p[1] - q[1]) ** 2)
 
-# Ship class
+
 class Ship:
     """
     Ship class generates player's ship.
@@ -206,7 +206,7 @@ class Ship:
         missile_group.add(Sprite(missile_pos, missile_vel, 0, 0, missile_image,
         missile_info, missile_sound))
 
-# Sprite class
+
 class Sprite:
     """
     Generates non-ship sprites, ie. asteroids and bullets.
@@ -286,10 +286,10 @@ class Sprite:
             return False
 
 
-# Mouseclick handlers that reset UI and conditions whether splash image is drawn
 def click(pos):
     """
-    Can start the game via a mouse click handler.
+    Originally a mouseclick handler that reset UI.
+    Also set conditions whether splash image is drawn.
     Or for this game, by calling click and giving a position for the ship.
     """
     global started, score, lives
@@ -323,23 +323,6 @@ def group_collide(group, other_object):
                 return collision
 
 
-def group_collide(group, other_object):
-        copy_of_group = set(group)
-        collision = False
-        for item in copy_of_group:
-            collision = item.collide(other_object)
-            if collision:
-                explosion_group.add(Sprite(item.pos, item.vel, 0, 0,
-                                           explosion_image, explosion_info,
-                                           explosion_sound))
-                group.remove(item)
-                if other_object.image == ship_image:
-                    explosion_group_ship.add(Sprite(my_ship.pos, my_ship.vel, 0, 0,
-                                           explosion_image2, explosion_info,
-                                           explosion_sound))
-                return collision
-
-
 def group_zone(group, other_object, inner_buff, outer_buff):
         copy_of_group = set(group)
         zone = False
@@ -347,6 +330,7 @@ def group_zone(group, other_object, inner_buff, outer_buff):
             zone = item.zone(other_object, inner_buff, outer_buff)
             if zone:
                 return zone
+
 
 def group_group_collide(group, other_group):
         copy_of_group = set(group)
@@ -366,6 +350,7 @@ def process_sprite_group(a_set):
         time_to_die = item.update()
         if time_to_die:
             a_set.remove(item)
+
 
 def process_sprite_group_1(a_set, canvas):
     copy_of_a_set = set(a_set)
@@ -403,7 +388,7 @@ def ai(in_zone1, in_zone2, in_zone3):
         print "Rocks Destroyed:", score / 100
         print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
 
-
+    '''
     # Make Ship Thrust
     if thrustit < 500 and in_zone2 or in_zone1:
         my_ship.thrusters(True)
@@ -424,10 +409,12 @@ def ai(in_zone1, in_zone2, in_zone3):
         my_ship.angle = 0.0
     direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
     my_ship.angle += direction
+    '''
 
     #########TESTING
     state = get_state(rocks_in_zone2)
     max_q = lookup_q_values(state)
+    action(['moveF', 12], my_ship)
     post_action_move = action(max_q, my_ship)
     statePrime = get_state()
 
@@ -654,20 +641,12 @@ def keyup(key):
         ship_angle_vel += init_ship_angle_vel
 
 
-# initialize frame
-
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
-# register handlers
-#frame.set_keyup_handler(keyup)
-#frame.set_keydown_handler(keydown)
-#frame.set_mouseclick_handler(click)
-
-
-for x in xrange(1):
+for x in xrange(TRAINING_RUNS):
     display = False
-    click([WIDTH / 2, HEIGHT / 2])
+    click(pos)
     print "\n\n\n####### game_started #######"
     y = 0
     while y < 10000:
@@ -683,12 +662,4 @@ frame.set_draw_handler(draw)
 timer = simplegui.create_timer(1000.0, rock_spawner)
 timer.start()
 frame.start()
-click([WIDTH / 2, HEIGHT / 2])
-
-
-#timer = simplegui.create_timer(1000.0, rock_spawner)
-#timer2 = simplegui.create_timer(1, draw)
-# get things rolling
-#timer.start()
-#timer2.start()
-#frame.start()
+click(pos)

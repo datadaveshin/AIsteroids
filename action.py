@@ -2,9 +2,7 @@
 Performs the actions of the ship
 '''
 import random
-# import game
 
-# {'moveF': 12}
 
 def action(picked_object, my_ship):
     '''
@@ -12,27 +10,27 @@ def action(picked_object, my_ship):
     80% of the time, the passed in action will be taken
     20% of the time, it will be random
     '''
-    print "\n\n#############"
-    print 'picked_object', picked_object
+    # print "\n\n#############"
+    # print 'picked_object', picked_object
     combined_component = random.randint(0, 100)
-    print "combined_component", combined_component
+    # print "combined_component", combined_component
     if combined_component < 80:
         if picked_object[0] == 'moveT':
-            print "q_actionT"
+            # print "q_actionT"
             q_action = my_ship.thrusters(True)
             return picked_object[0]
         else:
-            print "q_actionF"
+            # print "q_actionF"
             q_action = my_ship.thrusters(False)
             return 'moveF'
     else:
         random_component = random.randint(0, 100)
-        print "random_component", random_component
+        # print "random_component", random_component
         if random_component < 50:
-            print "r_actionT"
+            # print "r_actionT"
             random_action = my_ship.thrusters(True)
             return 'moveT'
         else:
-            print "r_actionF"
+            # print "r_actionF"
             random_action = my_ship.thrusters(False)
-            retrun 'moveF'
+            return 'moveF'
