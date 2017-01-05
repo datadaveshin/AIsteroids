@@ -672,7 +672,10 @@ for x in xrange(TRAINING_RUNS):
     y = 0
     while y < 10000:
         y += 1
+
         draw_1()
+
+
         if y % 10 == 0:
             rock_spawner()
 
