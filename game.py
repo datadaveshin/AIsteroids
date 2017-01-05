@@ -20,6 +20,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
+TRAINING_RUNS = 2
 
 # Globals for logic
 score = 0
@@ -130,7 +131,7 @@ def angle_to_vector(ang):
 def dist(p, q):
     return math.sqrt((p[0] - q[0]) ** 2+(p[1] - q[1]) ** 2)
 
-# Ship class
+
 class Ship:
     """
     Ship class generates player's ship.
@@ -204,7 +205,7 @@ class Ship:
         missile_group.add(Sprite(missile_pos, missile_vel, 0, 0, missile_image,
         missile_info, missile_sound))
 
-# Sprite class
+
 class Sprite:
     """
     Generates non-ship sprites, ie. asteroids and bullets.
@@ -286,8 +287,8 @@ class Sprite:
 
 def click(pos):
     """
-    Originally a mouseclick handler that reset UI and conditions whether splash image is drawn
-    Can start the game via a mouse click handler.
+    Originally a mouseclick handler that reset UI.
+    Also set conditions whether splash image is drawn.
     Or for this game, by calling click and giving a position for the ship.
     """
     global started, score, lives
@@ -346,6 +347,7 @@ def group_zone(group, other_object, inner_buff, outer_buff):
             if zone:
                 return zone
 
+
 def group_group_collide(group, other_group):
         copy_of_group = set(group)
         collision = False
@@ -364,6 +366,7 @@ def process_sprite_group(a_set):
         time_to_die = item.update()
         if time_to_die:
             a_set.remove(item)
+
 
 def process_sprite_group_1(a_set, canvas):
     copy_of_a_set = set(a_set)
@@ -425,7 +428,7 @@ def ai(in_zone1, in_zone2, in_zone3):
     '''
 
     #########TESTING
-    print action(['moveF', 12], my_ship)
+    action(['moveF', 12], my_ship)
 
 #@! def draw(canvas):
 def draw_1():
@@ -654,7 +657,7 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 #frame.set_mouseclick_handler(click)
 
 
-for x in xrange(1):
+for x in xrange(TRAINING_RUNS):
     display = False
     click([WIDTH / 2, HEIGHT / 2])
     print "\n\n\n####### game_started #######"
@@ -672,6 +675,7 @@ frame.set_draw_handler(draw)
 timer = simplegui.create_timer(1000.0, rock_spawner)
 timer.start()
 frame.start()
+click()
 click([WIDTH / 2, HEIGHT / 2])
 
 
