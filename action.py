@@ -34,3 +34,13 @@ def action(picked_object, my_ship):
             # print "r_actionF"
             random_action = my_ship.thrusters(False)
             return 'moveF'
+
+# def turnRight():
+#     if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+#         my_ship.angle = 0.0
+# my_ship.angle += 1.5708
+#
+# def turnLeft():
+#     if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+#         my_ship.angle = 0.0
+# my_ship.angle -= 1.5708

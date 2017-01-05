@@ -5,6 +5,10 @@ Game player for AIsteroids
 import math
 import random
 from action import action
+from qlearning import get_state
+from qlearning import q_learning
+from qlearning import get_max_q
+
 
 try:
     import simplegui
@@ -20,7 +24,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 2
+TRAINING_RUNS = 1
 
 # Globals for logic
 score = 0
@@ -40,6 +44,9 @@ rock_vel_multiplier_factor = 0.35
 free_lives = False
 extra_lives_set = set([])
 extra_life_multple = 0
+
+state = 'asteroidF__aliveT'
+state_prime = 'asteroidF__aliveT'
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -360,6 +367,11 @@ def process_sprite_group_1(a_set, canvas):
         time_to_die = item.update()
         if time_to_die:
             a_set.remove(item)
+### AI STARTS HERE
+### AI STARTS HERE
+### AI STARTS HERE
+### AI STARTS HERE
+### AI STARTS HERE
 
 zone1_count = 0
 zone2_count = 0
@@ -369,8 +381,7 @@ def ai(in_zone1, in_zone2, in_zone3):
     Put your AI function here
     """
     global zone1_count, zone2_count, zone3_count
-    global ship_angle_vel
-
+    global ship_angle_vel, state, state_prime
     thrustit = random.randint(0, 1000)
     # print time
 
@@ -410,24 +421,24 @@ def ai(in_zone1, in_zone2, in_zone3):
     direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
     my_ship.angle += direction
     '''
-    def turnRight():
-        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
-            my_ship.angle = 0.0
-    my_ship.angle += 1.5708
-
-    def turnLeft():
-        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
-            my_ship.angle = 0.0
-    my_ship.angle -= 1.5708
-    
     #########TESTING
-    state = get_state(rocks_in_zone2)
-    max_q = lookup_q_values(state)
-    action(['moveF', 12], my_ship)
-    post_action_move = action(max_q, my_ship)
-    statePrime = get_state()
+    if y % 2 != 0:
+        state = get_state(in_zone2, ship_hit_rocks)
+        max_q = get_max_q(state)
+        # # action(['moveF', 12], my_ship)
+        post_action_move = action(max_q, my_ship)
 
-    Q_key_1 = state + "__" + post_action_move
+    # ship_hit_rocks2 = group_collide(rock_group, my_ship)
+    # in_zone2_2 = group_zone(rock_group, my_ship, 51, 100)
+    else:
+        state_prime = get_state(in_zone2, ship_hit_rocks)
+    print state + " STATE " + state_prime + " I AM STATEPRIME \n"
+    # q_key_1 = state + "__" + post_action_move
+
+    # print statePrime + "state prime"
+    # print q_key_1 + "q key 1"
+    # q_val = q_learning(q_key_1, statePrime, 0.5, max_q)
+    # set_q_value(q_val , statePrime)
 
 
 
@@ -492,6 +503,7 @@ def draw_1():
 
 
     # check for ship/rock collisions
+    global ship_hit_rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
     if ship_hit_rocks:
         lives -= 1
@@ -665,10 +677,10 @@ for x in xrange(TRAINING_RUNS):
             rock_spawner()
 
 
-display = True
-frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
-frame.set_draw_handler(draw)
-timer = simplegui.create_timer(1000.0, rock_spawner)
-timer.start()
-frame.start()
-click(pos)
+# display = True
+# frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
+# frame.set_draw_handler(draw)
+# timer = simplegui.create_timer(1000.0, rock_spawner)
+# timer.start()
+# frame.start()
+# click(pos)
