@@ -10,7 +10,6 @@ def action(picked_object, my_ship):
     80% of the time, the passed in action will be taken
     20% of the time, it will be random
     '''
-
     # print "\n\n#############"
     # print 'picked_object', picked_object
     combined_component = random.randint(0, 100)
