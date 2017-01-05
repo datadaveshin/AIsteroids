@@ -24,7 +24,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 1
+TRAINING_RUNS = 5
 
 # Globals for logic
 score = 0
@@ -37,7 +37,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 8
+max_rocks = 20
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -331,24 +331,22 @@ def group_collide(group, other_object):
 
 
 def group_zone(group, other_object, inner_buff, outer_buff):
-        copy_of_group = set(group)
-        zone = False
-        for item in copy_of_group:
-            zone = item.zone(other_object, inner_buff, outer_buff)
-            if zone:
-                return zone
-
+    copy_of_group = set(group)
+    zone = False
+    for item in copy_of_group:
+        zone = item.zone(other_object, inner_buff, outer_buff)
+    return zone
 
 def group_group_collide(group, other_group):
-        copy_of_group = set(group)
-        collision = False
-        num_collisions = 0
-        for item in copy_of_group:
-            collision = group_collide(other_group, item)
-            if collision:
-                num_collisions += 1
-                group.discard(item)
-        return num_collisions
+    copy_of_group = set(group)
+    collision = False
+    num_collisions = 0
+    for item in copy_of_group:
+        collision = group_collide(other_group, item)
+        if collision:
+            num_collisions += 1
+            group.discard(item)
+    return num_collisions
 
 
 def process_sprite_group(a_set):
@@ -373,9 +371,9 @@ def process_sprite_group_1(a_set, canvas):
 ### AI STARTS HERE
 ### AI STARTS HERE
 
-zone1_count = 0
-zone2_count = 0
-zone3_count = 0
+# zone1_count = 0
+# zone2_count = 0
+# zone3_count = 0
 def ai(in_zone1, in_zone2, in_zone3):
     """
     Put your AI function here
@@ -385,13 +383,13 @@ def ai(in_zone1, in_zone2, in_zone3):
     thrustit = random.randint(0, 1000)
     # print time
 
-    # Check if in zone
-    if in_zone1:
-        zone1_count += 1
-    if in_zone2:
-        zone2_count += 1
-    if in_zone3:
-        zone3_count += 1
+    # # Check if in zone
+    # if in_zone1:
+    #     zone1_count += 1
+    # if in_zone2:
+    #     zone2_count += 1
+    # if in_zone3:
+    #     zone3_count += 1
 
     # Count times in zone
     if (time - 0.05) % 100 == 0:
@@ -422,17 +420,17 @@ def ai(in_zone1, in_zone2, in_zone3):
     my_ship.angle += direction
     '''
     #########TESTING
-    if y % 2 != 0:
-        state = get_state(in_zone2, ship_hit_rocks)
-        max_q = get_max_q(state)
-        # # action(['moveF', 12], my_ship)
-        post_action_move = action(max_q, my_ship)
+    # if y % 2 != 0:
+    # state = get_state(in_zone2, ship_hit_rocks)
+    # max_q = get_max_q(state)
+    # # action(['moveF', 12], my_ship)
+    # post_action_move = action(max_q, my_ship)
 
     # ship_hit_rocks2 = group_collide(rock_group, my_ship)
     # in_zone2_2 = group_zone(rock_group, my_ship, 51, 100)
-    else:
-        state_prime = get_state(in_zone2, ship_hit_rocks)
-    print state + " STATE " + state_prime + " I AM STATEPRIME \n"
+    # else:
+    #     state_prime = get_state(in_zone2, ship_hit_rocks)
+    # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
     # q_key_1 = state + "__" + post_action_move
 
     # print statePrime + "state prime"
@@ -523,16 +521,6 @@ def draw_1():
         '''
 
 
-    """ Use this for AI if you want"""
-    # check if rocks are in the ship's zone
-    rocks_in_zone1 = group_zone(rock_group, my_ship, 2, 50)
-    rocks_in_zone2 = group_zone(rock_group, my_ship, 51, 100)
-    rocks_in_zone3 = group_zone(rock_group, my_ship, 101, 150)
-
-
-    if started:
-        """Call your AI code here"""
-        ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
 
 
 def draw(canvas):
@@ -665,6 +653,10 @@ def keyup(key):
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
+draw_1()
+zone1_count = 0
+zone2_count = 0
+zone3_count = 0
 for x in xrange(TRAINING_RUNS):
     display = False
     click(pos)
@@ -672,18 +664,52 @@ for x in xrange(TRAINING_RUNS):
     y = 0
     while y < 10000:
         y += 1
+        # check if rocks are in the ship's zone
+        # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+
+        # Check if in zone
+        # if in_zone1:
+        #     zone1_count += 1
+        if in_zone2:
+            zone2_count += 1
+        # if in_zone3:
+        #     zone3_count += 1
+
+        # Count times in zone
+        if y % 100 == 0:
+            print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
+            print "Rocks Destroyed:", score / 100
+            print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
+
+        """ Use this for AI if you want"""
+
+
+        #if started:
+        """Call your AI code here"""
+        # ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
+        state = get_state(in_zone2, ship_hit_rocks)
+        max_q = get_max_q(state)
+        post_action_move = action(max_q, my_ship)
 
         draw_1()
 
+        # check if rocks are in the ship's zone
+        # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+        state_prime = get_state(in_zone2, ship_hit_rocks)
+        print state + " STATE " + state_prime + " I AM STATEPRIME \n"
 
         if y % 10 == 0:
             rock_spawner()
 
 
-# display = True
-# frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
-# frame.set_draw_handler(draw)
-# timer = simplegui.create_timer(1000.0, rock_spawner)
-# timer.start()
-# frame.start()
-# click(pos)
+display = True
+frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
+frame.set_draw_handler(draw)
+timer = simplegui.create_timer(1000.0, rock_spawner)
+timer.start()
+frame.start()
+click(pos)
