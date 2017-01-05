@@ -410,7 +410,16 @@ def ai(in_zone1, in_zone2, in_zone3):
     direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
     my_ship.angle += direction
     '''
+    def turnRight():
+        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+            my_ship.angle = 0.0
+    my_ship.angle += 1.5708
 
+    def turnLeft():
+        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+            my_ship.angle = 0.0
+    my_ship.angle -= 1.5708
+    
     #########TESTING
     state = get_state(rocks_in_zone2)
     max_q = lookup_q_values(state)
