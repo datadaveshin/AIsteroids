@@ -5,9 +5,11 @@ Game player for AIsteroids
 import math
 import random
 from action import action
+from action import action2
 from qlearning import get_state
 from qlearning import q_learning
 from qlearning import get_max_q
+from qlearning import set_q_value
 
 
 try:
@@ -24,7 +26,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 5
+TRAINING_RUNS = 10
 
 # Globals for logic
 score = 0
@@ -37,7 +39,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 20
+max_rocks = 2
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -426,14 +428,10 @@ def ai(in_zone1, in_zone2, in_zone3):
     # # action(['moveF', 12], my_ship)
     # post_action_move = action(max_q, my_ship)
 
-    # ship_hit_rocks2 = group_collide(rock_group, my_ship)
-    # in_zone2_2 = group_zone(rock_group, my_ship, 51, 100)
-    # else:
     #     state_prime = get_state(in_zone2, ship_hit_rocks)
     # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
     # q_key_1 = state + "__" + post_action_move
 
-    # print statePrime + "state prime"
     # print q_key_1 + "q key 1"
     # q_val = q_learning(q_key_1, statePrime, 0.5, max_q)
     # set_q_value(q_val , statePrime)
@@ -604,8 +602,44 @@ def draw(canvas):
     if started:
         """Call your AI code here"""
         # ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
-        ai_part1(in_zone2, ship_hit_rocks)
-        ai_part2(in_zone2, ship_hit_rocks)
+        # ai_part1(in_zone2, ship_hit_rocks)
+        # ai_part2(in_zone2, ship_hit_rocks)
+
+        '''STUFF COPIED OVER'''
+        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+
+        global zone1_count
+        global zone2_count
+        global zone3_count
+        # Check if in zone
+        # if in_zone1:
+        #     zone1_count += 1
+        if in_zone2:
+            zone2_count += 1
+        # if in_zone3:
+        #     zone3_count += 1
+
+        # Count times in zone
+        if y % 100 == 0:
+            print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
+            print "Rocks Destroyed:", score / 100
+            print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
+
+
+        part1_returned = ai_part1(in_zone2, ship_hit_rocks)
+        # print part1_returned, "part 1 AI"
+        # state = get_state(in_zone2, ship_hit_rocks)
+        # max_q = get_max_q(state)
+        # post_action_move = action(max_q, my_ship)
+
+        draw_1()
+        #['asteroidF__aliveT', ['moveF', 0], 'moveF']
+        # check if rocks are in the ship's zone
+        # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+
 
 # timer handler that spawns a rock
 def rock_spawner():
@@ -659,12 +693,31 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
-    post_action_move = action(max_q, my_ship)
-    print state + " STATE "
+    if display:
+        post_action_move = action2(max_q, my_ship)
+        # print "if", display
+    else:
+        post_action_move = action(max_q, my_ship)
+        # print "else"
 
-def ai_part2(in_zone2_part2, ship_hit_rocks_part2):
+    # print "post_action_move", post_action_move
+    # print state + " STATE "
+
+    return [state, max_q, post_action_move]
+
+def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
     state_prime = get_state(in_zone2, ship_hit_rocks)
-    print state_prime + " I AM STATEPRIME \n"
+    # print state_prime + " I AM STATEPRIME \n"
+    state = part1_array[0]
+    max_q = part1_array[1]
+    post_action_move = part1_array[2]
+    # print "post_action_move", post_action_move
+    q_key_1 = state + "__" + post_action_move
+    # print q_key_1
+    # print q_key_1 + "q key 1"
+    q_val = q_learning(q_key_1, state_prime, 0.5, max_q)
+    set_q_value(q_val , state_prime, post_action_move)
+
 
 
 draw_1()
@@ -698,20 +751,21 @@ for x in xrange(TRAINING_RUNS):
             print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
 
 
-        ai_part1(in_zone2, ship_hit_rocks)
+        part1_returned = ai_part1(in_zone2, ship_hit_rocks)
+        # print part1_returned, "part 1 AI"
         # state = get_state(in_zone2, ship_hit_rocks)
         # max_q = get_max_q(state)
         # post_action_move = action(max_q, my_ship)
 
         draw_1()
-
+        #['asteroidF__aliveT', ['moveF', 0], 'moveF']
         # check if rocks are in the ship's zone
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
         in_zone2 = group_zone(rock_group, my_ship, 1, 100)
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
 
 
-        ai_part2(in_zone2, ship_hit_rocks)
+        ai_part2(in_zone2, ship_hit_rocks, part1_returned)
         # state_prime = get_state(in_zone2, ship_hit_rocks)
         # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
 
@@ -719,10 +773,10 @@ for x in xrange(TRAINING_RUNS):
             rock_spawner()
 
 
-# display = True
-# frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
-# frame.set_draw_handler(draw)
-# timer = simplegui.create_timer(1000.0, rock_spawner)
-# timer.start()
-# frame.start()
-# click(pos)
+display = True
+frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
+frame.set_draw_handler(draw)
+timer = simplegui.create_timer(1000.0, rock_spawner)
+timer.start()
+frame.start()
+click(pos)

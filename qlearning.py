@@ -8,9 +8,9 @@ import random
 
 reward_dict = {
     'asteroidT__aliveT': 1,
-    'asteroidT__aliveF': -50,
+    'asteroidT__aliveF': -500,
     'asteroidF__aliveT': 1,
-    'asteroidF__aliveF': -50
+    'asteroidF__aliveF': -500
 }
 
 counter_dict = {
@@ -63,7 +63,7 @@ counter_dict = {
                     },
 
     'asteroidF__aliveF__moveF': {
-                    'asteroidT__aliveT': 12,
+                    'asteroidT__aliveT': 0,
                     'asteroidT__aliveF': 0,
                     'asteroidF__aliveT': 0,
                     'asteroidF__aliveF': 0,
@@ -123,15 +123,25 @@ def get_max_q(state):
 
 def q_learning(qkey1, state_prime, discount, max_q):
     counter_dict[qkey1][state_prime] += 1
-    sum = 0.0
-    counter = 0
+    total_observations = 0.0
     for key in counter_dict[qkey1]:
-        sum += counter_dict[qkey1][key]
-        counter += 1
-    average = sum / counter
-    reward_given = reward_dict[state_prime]
-    q_value = average * (reward_given + (discount * (max_q[1])))
+        # print "key", key, "counter_dict[qkey1]", counter_dict[qkey1]
+        total_observations += counter_dict[qkey1][key]
+    q_value = 0
+    for key in counter_dict[qkey1]:
+        t_probability = counter_dict[qkey1][key] / total_observations
+        reward_given = reward_dict[state_prime]
+        v_star = discount * (max_q[1])
+        component = t_probability * (reward_given + v_star)
+        q_value += component
+    # print "\naverage", average
+    # reward_given = reward_dict[state_prime]
+    # print "reward", reward_given, "max_q1", max_q
+    # q_value = average * (reward_given + (discount * (max_q[1])))
+    # print 'q_value', q_value
     return q_value
 
-def set_q_value(value, state_prime, state):
-    q_value_dict[state_prime][state] = value
+def set_q_value(value, state_prime, p_action_move):
+    # print 'q_value_dict[state_prime][state]', q_value_dict[state_prime][p_action_move]
+    q_value_dict[state_prime][p_action_move] += value
+    # print "p_action_move", p_action_move, "state_prime", state_prime, "value", value, "qval", q_value_dict[state_prime][p_action_move]
