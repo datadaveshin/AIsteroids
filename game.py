@@ -603,8 +603,9 @@ def draw(canvas):
 
     if started:
         """Call your AI code here"""
-        ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
-
+        # ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
+        ai_part1(in_zone2, ship_hit_rocks)
+        ai_part2(in_zone2, ship_hit_rocks)
 
 # timer handler that spawns a rock
 def rock_spawner():
@@ -653,6 +654,19 @@ def keyup(key):
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
+
+###### NEW AI STUFF#######
+def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
+    state = get_state(in_zone2_part1, ship_hit_rocks_part1)
+    max_q = get_max_q(state)
+    post_action_move = action(max_q, my_ship)
+    print state + " STATE "
+
+def ai_part2(in_zone2_part2, ship_hit_rocks_part2):
+    state_prime = get_state(in_zone2, ship_hit_rocks)
+    print state_prime + " I AM STATEPRIME \n"
+
+
 draw_1()
 zone1_count = 0
 zone2_count = 0
@@ -683,15 +697,11 @@ for x in xrange(TRAINING_RUNS):
             print "Rocks Destroyed:", score / 100
             print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
 
-        """ Use this for AI if you want"""
 
-
-        #if started:
-        """Call your AI code here"""
-        # ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
-        state = get_state(in_zone2, ship_hit_rocks)
-        max_q = get_max_q(state)
-        post_action_move = action(max_q, my_ship)
+        ai_part1(in_zone2, ship_hit_rocks)
+        # state = get_state(in_zone2, ship_hit_rocks)
+        # max_q = get_max_q(state)
+        # post_action_move = action(max_q, my_ship)
 
         draw_1()
 
@@ -699,17 +709,20 @@ for x in xrange(TRAINING_RUNS):
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
         in_zone2 = group_zone(rock_group, my_ship, 1, 100)
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
-        state_prime = get_state(in_zone2, ship_hit_rocks)
-        print state + " STATE " + state_prime + " I AM STATEPRIME \n"
+
+
+        ai_part2(in_zone2, ship_hit_rocks)
+        # state_prime = get_state(in_zone2, ship_hit_rocks)
+        # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
 
         if y % 10 == 0:
             rock_spawner()
 
 
-display = True
-frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
-frame.set_draw_handler(draw)
-timer = simplegui.create_timer(1000.0, rock_spawner)
-timer.start()
-frame.start()
-click(pos)
+# display = True
+# frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
+# frame.set_draw_handler(draw)
+# timer = simplegui.create_timer(1000.0, rock_spawner)
+# timer.start()
+# frame.start()
+# click(pos)

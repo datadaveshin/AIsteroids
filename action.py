@@ -29,6 +29,7 @@ def action(picked_object, my_ship):
         if random_component < 50:
             # print "r_actionT"
             random_action = my_ship.thrusters(True)
+            my_ship.shoot()
             return 'moveT'
         else:
             # print "r_actionF"
