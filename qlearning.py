@@ -6,12 +6,23 @@ import random
 
 
 
+# reward_dict = {
+#     'asteroidT__aliveT': 1,
+#     'asteroidT__aliveF': -500,
+#     'asteroidF__aliveT': 1,
+#     'asteroidF__aliveF': -500
+# }
+
 reward_dict = {
-    'asteroidT__aliveT': 1,
-    'asteroidT__aliveF': -500,
-    'asteroidF__aliveT': 1,
-    'asteroidF__aliveF': -500
+    'asteroidT__aliveT': 0,
+    'asteroidT__aliveF': 0,
+    'asteroidF__aliveT': 0,
+    'asteroidF__aliveF': 0
 }
+def update_reward_dict(a_score):
+    reward_dict['asteroidT__aliveF'] = a_score
+    reward_dict["asteroidF__aliveF"] = a_score
+
 
 counter_dict = {
     'asteroidT__aliveT__moveT': {
@@ -121,7 +132,7 @@ def get_max_q(state):
 
 
 
-def q_learning(qkey1, state_prime, discount, max_q):
+def q_learning(qkey1, state_prime, discount, max_q, a_score):
     counter_dict[qkey1][state_prime] += 1
     total_observations = 0.0
     for key in counter_dict[qkey1]:
@@ -130,7 +141,10 @@ def q_learning(qkey1, state_prime, discount, max_q):
     q_value = 0
     for key in counter_dict[qkey1]:
         t_probability = counter_dict[qkey1][key] / total_observations
-        reward_given = reward_dict[state_prime]
+        if reward_dict[state_prime] == 'asteroidT__aliveF' or reward_dict[state_prime] == 'asteroidF__aliveF':
+            reward_given = update_reward_dict(a_score)
+        else:
+            reward_given = 0
         v_star = discount * (max_q[1])
         component = t_probability * (reward_given + v_star)
         q_value += component
