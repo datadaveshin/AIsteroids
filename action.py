@@ -10,6 +10,7 @@ def action(picked_object, my_ship):
     80% of the time, the passed in action will be taken
     20% of the time, it will be random
     '''
+    print "action 1!!!!"
     # if show:
     # print "\n\n#############"
     # print 'picked_object', picked_object
@@ -55,6 +56,7 @@ def action2(picked_object, my_ship):
     80% of the time, the passed in action will be taken
     20% of the time, it will be random
     '''
+    print "action2"
     # if show:
     # print "\n\n#############"
     # print 'picked_object', picked_object

@@ -26,7 +26,8 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 10
+TRAINING_RUNS = 1
+TRAINING_ITERATIONS = 1
 
 # Globals for logic
 score = 0
@@ -39,7 +40,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 2
+max_rocks = 30
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -543,6 +544,7 @@ def draw(canvas):
 
     ship_hit_rocks = group_collide(rock_group, my_ship)
     part1_returned = ai_part1(in_zone2, ship_hit_rocks)
+
     # print part1_returned, "part 1 AI"
     # state = get_state(in_zone2, ship_hit_rocks)
     # max_q = get_max_q(state)
@@ -711,7 +713,7 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     return [state, max_q, post_action_move]
 
 def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
-    state_prime = get_state(in_zone2, ship_hit_rocks)
+    state_prime = get_state(in_zone2_part2, ship_hit_rocks_part2)
     # print state_prime + " I AM STATEPRIME \n"
     state = part1_array[0]
     max_q = part1_array[1]
@@ -734,7 +736,7 @@ for x in xrange(TRAINING_RUNS):
     click(pos)
     print "\n\n\n####### game_started #######"
     y = 0
-    while y < 10000:
+    while y < TRAINING_ITERATIONS:
         y += 1
         # check if rocks are in the ship's zone
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)

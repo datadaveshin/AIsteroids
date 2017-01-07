@@ -7,9 +7,9 @@ import random
 
 
 reward_dict = {
-    'asteroidT__aliveT': 1,
+    'asteroidT__aliveT': 0.01,
     'asteroidT__aliveF': -500,
-    'asteroidF__aliveT': 1,
+    'asteroidF__aliveT': 0.01,
     'asteroidF__aliveF': -500
 }
 
@@ -144,4 +144,5 @@ def q_learning(qkey1, state_prime, discount, max_q):
 def set_q_value(value, state_prime, p_action_move):
     # print 'q_value_dict[state_prime][state]', q_value_dict[state_prime][p_action_move]
     q_value_dict[state_prime][p_action_move] += value
+    print q_value_dict
     # print "p_action_move", p_action_move, "state_prime", state_prime, "value", value, "qval", q_value_dict[state_prime][p_action_move]
