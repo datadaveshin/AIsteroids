@@ -701,7 +701,7 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
     if display:
-        post_action_move = action2(max_q, my_ship)
+        post_action_move = action(max_q, my_ship)
         # print "if", display
     else:
         post_action_move = action(max_q, my_ship)
