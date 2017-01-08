@@ -408,17 +408,13 @@ def draw_1():
         if lives <= 0:
             started = False
 
-    # draw splash screen if not started
-    if not started:
-        rock_group = set([])
-        soundtrack.pause()
-
 
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
     global zone1_count
     global zone2_count
     global zone3_count
+
     # Check if in zone
     # if in_zone1:
     #     zone1_count += 1
