@@ -26,6 +26,7 @@ ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
 TRAINING_ITERATIONS = 1
+STAT_COUNTER = 0
 
 # Globals for logic
 score = 0
@@ -42,11 +43,9 @@ max_rocks = 3
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
-free_lives = False
-extra_lives_set = set([])
-extra_life_multple = 0
+lives = LIVES #! For AI setup to easily change number of lives
 
-# State Primers
+# State Primers for testing
 # state = 'asteroidF__aliveT'
 # state_prime = 'asteroidF__aliveT'
 state = 'asteroidT__aliveT'
@@ -57,12 +56,6 @@ zone1_count = 0
 zone2_count = 0
 zone3_count = 0
 
-while extra_life_multple < 1000000:
-    extra_life_multple += 1000
-    extra_lives_set.add(extra_life_multple)
-
-life_given = False
-lives = LIVES #! For AI setup to easily change number of lives
 
 # Initialize sets
 rock_group = set([])
@@ -376,14 +369,13 @@ def process_sprite_group_1(a_set, canvas):
         if time_to_die:
             a_set.remove(item)
 
-def print_zone_stats(z1_cnt, z2_cnt, z3_cnt):
-    # Count times in zone
-    if y % 100 == 0:
-        print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
+def print_zone_stats(stat_cnt, z1_cnt, z2_cnt, z3_cnt):
+    if stat_cnt % 100 == 0:
+        print "\nGame Loops:", stat_cnt, "Times Killed:", -(lives - 1000)
         print "Rocks Destroyed:", score / 100
         print "zone1:", z1_cnt, "zone2:", z2_cnt, "zone3:", z3_cnt
 
-def draw_1():
+def draw_in_background():
     global time, started, lives, score, rock_group, life_given
 
     # Process sprites
@@ -399,14 +391,6 @@ def draw_1():
     missiles_hit_rocks = group_group_collide(missile_group, rock_group)
     score += missiles_hit_rocks * 100
 
-    # Free lives if score 10,000
-    if free_lives:
-        if score in extra_lives_set and (not life_given):
-            lives += 1
-            life_given = True
-        elif score not in extra_lives_set:
-            life_given = False
-
     # Check for ship/rock collisions
     global ship_hit_rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
@@ -419,24 +403,16 @@ def draw_1():
 
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
-    global zone1_count, zone2_count, zone3_count
 
-    # Check if in zone, up counts
+    # Check if rocks in zone
     # in_zone1 = group_zone(rock_group, my_ship, 1, 100)
     in_zone2 = group_zone(rock_group, my_ship, 1, 100)
     # in_zone3 = group_zone(rock_group, my_ship, 1, 100)
 
-    # Use for printing zone stats
-    # if in_zone1:
-    #     zone1_count += 1
-    if in_zone2:
-        zone2_count += 1
-    # if in_zone3:
-    #     zone3_count += 1
-    print_zone_stats(zone1_count, zone2_count, zone3_count)
-
-    # Check if ship collides with rocks, do AI part 1
+    # Check if ship collides with rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
+
+    # Do AI part 1
     part1_returned = ai_part1(in_zone2, ship_hit_rocks)
 
     # Animiate background
@@ -488,8 +464,10 @@ def draw(canvas):
     ai_part2(in_zone2, ship_hit_rocks, part1_returned)
 
 
-# Timer handler that spawns a rock
 def rock_spawner():
+    """
+    Spawns arocks depending on time, or game loop
+    """
     global rock_group, score, rock_vel_multiplier_factor
     # rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
     rock_vel_multiplier = ROCK_SPEED #! for the ai game
@@ -509,66 +487,40 @@ def rock_spawner():
         else:
             rock_group.add(potential_rock)
 
-# key down handler
-def keydown(key):
-    global ship_angle_vel
-    if key == simplegui.KEY_MAP["up"]:
-        my_ship.thrusters(True)
-    elif key == simplegui.KEY_MAP["right"]:
-        ship_angle_vel += init_ship_angle_vel
-    elif key == simplegui.KEY_MAP["left"]:
-        ship_angle_vel -= init_ship_angle_vel
-    elif key == simplegui.KEY_MAP["space"]:
-        my_ship.shoot()
-
-# key up handler
-def keyup(key):
-    global ship_angle_vel
-    if key == simplegui.KEY_MAP["up"]:
-        my_ship.thrusters(False)
-    elif key == simplegui.KEY_MAP["right"]:
-        ship_angle_vel -= init_ship_angle_vel
-    elif key == simplegui.KEY_MAP["left"]:
-        ship_angle_vel += init_ship_angle_vel
-
-
-# initialize ship and two sprites
+#################
+# INITIALIZE SHIP
+#################
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
-
-###### NEW AI STUFF#######
+##########
+# AI CALLS
+##########
 def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
     if display:
         post_action_move = action2(max_q, my_ship)
-        # print "if", display
     else:
         post_action_move = action(max_q, my_ship)
-        # print "else"
-
-    # print "post_action_move", post_action_move
-    # print state + " STATE "
-
     return [state, max_q, post_action_move]
 
 def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
     state_prime = get_state(in_zone2_part2, ship_hit_rocks_part2)
-    # print state_prime + " I AM STATEPRIME \n"
     state = part1_array[0]
     max_q = part1_array[1]
     post_action_move = part1_array[2]
-    # print "post_action_move", post_action_move
     q_key_1 = state + "__" + post_action_move
-    # print q_key_1
-    # print q_key_1 + "q key 1"
     q_val = q_learning(q_key_1, state_prime, 0.6, max_q)
     set_q_value(q_val , state_prime, post_action_move)
 
+############
+# START GAME
+############
 
+# 1. Do one preliminary game loop to set values
+draw_in_background()
 
-draw_1()
-
+# 2. Do offline training in the background
 for x in xrange(TRAINING_RUNS):
     display = False
     click(pos)
@@ -576,48 +528,31 @@ for x in xrange(TRAINING_RUNS):
     y = 0
     while y < TRAINING_ITERATIONS:
         y += 1
-        # check if rocks are in the ship's zone
-        # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
+
+        # Check if in zone, up counts
+        # in_zone1 = group_zone(rock_group, my_ship, 1, 100)
         in_zone2 = group_zone(rock_group, my_ship, 1, 100)
-        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+        # in_zone3 = group_zone(rock_group, my_ship, 1, 100)
 
-        # Check if in zone
-        # if in_zone1:
-        #     zone1_count += 1
-        if in_zone2:
-            zone2_count += 1
-        # if in_zone3:
-        #     zone3_count += 1
-
-        # Count times in zone
-        if y % 100 == 0:
-            print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
-            print "Rocks Destroyed:", score / 100
-            print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
-
-
+        # Do AI part 1
         part1_returned = ai_part1(in_zone2, ship_hit_rocks)
-        # print part1_returned, "part 1 AI"
-        # state = get_state(in_zone2, ship_hit_rocks)
-        # max_q = get_max_q(state)
-        # post_action_move = action(max_q, my_ship)
 
-        draw_1()
-        #['asteroidF__aliveT', ['moveF', 0], 'moveF']
-        # check if rocks are in the ship's zone
+        # Do draw events but in the background
+        draw_in_background()
+
+        # Update zone for state, start AI part 2
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
         in_zone2 = group_zone(rock_group, my_ship, 1, 100)
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
 
-
+        # Do AI part 2
         ai_part2(in_zone2, ship_hit_rocks, part1_returned)
-        # state_prime = get_state(in_zone2, ship_hit_rocks)
-        # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
 
+        # Spawn Rocks
         if y % 10 == 0:
             rock_spawner()
 
-
+# 3. Do online training & visualize results
 display = True
 frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
 frame.set_draw_handler(draw)
