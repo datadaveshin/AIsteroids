@@ -1,7 +1,6 @@
 """
 Game player for AIsteroids
 """
-
 import math
 import random
 from action import action
@@ -10,7 +9,6 @@ from qlearning import get_state
 from qlearning import q_learning
 from qlearning import get_max_q
 from qlearning import set_q_value
-
 
 try:
     import simplegui
@@ -26,8 +24,8 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 10
-TRAINING_ITERATIONS = 10000
+TRAINING_RUNS = 1
+TRAINING_ITERATIONS = 1000
 
 # Globals for logic
 score = 0
@@ -50,7 +48,6 @@ extra_life_multple = 0
 
 state = 'asteroidF__aliveT'
 state_prime = 'asteroidF__aliveT'
-z = 0
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -341,6 +338,7 @@ def group_zone(group, other_object, inner_buff, outer_buff):
         zone = item.zone(other_object, inner_buff, outer_buff)
     return zone
 
+
 def group_group_collide(group, other_group):
     copy_of_group = set(group)
     collision = False
@@ -369,78 +367,6 @@ def process_sprite_group_1(a_set, canvas):
         time_to_die = item.update()
         if time_to_die:
             a_set.remove(item)
-### AI STARTS HERE
-### AI STARTS HERE
-### AI STARTS HERE
-### AI STARTS HERE
-### AI STARTS HERE
-
-# zone1_count = 0
-# zone2_count = 0
-# zone3_count = 0
-def ai(in_zone1, in_zone2, in_zone3):
-    """
-    Put your AI function here
-    """
-    global zone1_count, zone2_count, zone3_count
-    global ship_angle_vel, state, state_prime
-    thrustit = random.randint(0, 1000)
-    # print time
-
-    # # Check if in zone
-    # if in_zone1:
-    #     zone1_count += 1
-    # if in_zone2:
-    #     zone2_count += 1
-    # if in_zone3:
-    #     zone3_count += 1
-
-    # Count times in zone
-    if (time - 0.05) % 100 == 0:
-        print "\nGame Loops:", time - 0.05, "Times Killed:", -(lives - 1000)
-        print "Rocks Destroyed:", score / 100
-        print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
-
-    '''
-    # Make Ship Thrust
-    if thrustit < 500 and in_zone2 or in_zone1:
-        my_ship.thrusters(True)
-    elif thrustit < 10:
-        my_ship.thrusters(True)
-    else:
-        my_ship.thrusters(False)
-
-    # Make Ship Shoot
-    shootit = random.randint(0, 1000)
-    if in_zone2 and shootit < 500:
-        my_ship.shoot()
-    elif shootit < 5:
-        my_ship.shoot()
-
-    # Make Ship Turn
-    if  6.283 < my_ship.angle or my_ship.angle < -6.283:
-        my_ship.angle = 0.0
-    direction = random.choice([-0.15,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0.15,0.15,0.15])
-    my_ship.angle += direction
-    '''
-    #########TESTING
-    # if y % 2 != 0:
-    # state = get_state(in_zone2, ship_hit_rocks)
-    # max_q = get_max_q(state)
-    # # action(['moveF', 12], my_ship)
-    # post_action_move = action(max_q, my_ship)
-
-    #     state_prime = get_state(in_zone2, ship_hit_rocks)
-    # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
-    # q_key_1 = state + "__" + post_action_move
-
-    # print q_key_1 + "q key 1"
-    # q_val = q_learning(q_key_1, statePrime, 0.5, max_q)
-    # set_q_value(q_val , statePrime)
-
-
-
-
 
 
 #@! def draw(canvas):
