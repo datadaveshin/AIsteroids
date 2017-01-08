@@ -7,10 +7,10 @@ import random
 
 
 reward_dict = {
-    'asteroidT__aliveT': 1,
-    'asteroidT__aliveF': -500,
-    'asteroidF__aliveT': 1,
-    'asteroidF__aliveF': -500
+    'asteroidT__aliveT': 0,
+    'asteroidT__aliveF': -1,
+    'asteroidF__aliveT': 0,
+    'asteroidF__aliveF': -1
 }
 
 counter_dict = {
@@ -68,10 +68,56 @@ counter_dict = {
                     'asteroidF__aliveT': 0,
                     'asteroidF__aliveF': 0,
                     },
-
+    'asteroidT__aliveT__turnR': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidT__aliveT__turnL': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidT__aliveF__turnR': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidT__aliveF__turnL': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidF__aliveT__turnR': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidF__aliveT__turnL': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidF__aliveF__turnR': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    },
+    'asteroidF__aliveF__turnL': {
+                    'asteroidT__aliveT': 0,
+                    'asteroidT__aliveF': 0,
+                    'asteroidF__aliveT': 0,
+                    'asteroidF__aliveF': 0,
+                    }
     }
 
-print counter_dict['asteroidF__aliveF__moveF']['asteroidT__aliveT']
 # q_value_dict  = {
 #     'asteroidT__aliveT__moveT': 0,
 #     'asteroidT__aliveT__moveF': 0,
@@ -84,10 +130,11 @@ print counter_dict['asteroidF__aliveF__moveF']['asteroidT__aliveT']
 #     }
 
 q_value_dict  = {
-    'asteroidT__aliveT': {'moveT': 0, 'moveF': 0},
-    'asteroidT__aliveF': {'moveT': 0, 'moveF': 0},
-    'asteroidF__aliveT': {'moveT': 0, 'moveF': 0},
-    'asteroidF__aliveF': {'moveT': 0, 'moveF': 0},
+    'asteroidT__aliveT': {'moveT': 0, 'moveF': 0, 'turnR': 0, 'turnL': 0
+    ,'thrustL': 0, 'thrustR': 0, 'shoot': 0},
+    'asteroidT__aliveF': {'moveT': 0, 'moveF': 0, 'turnR': 0, 'turnL': 0,'thrustL': 0, 'thrustR': 0, 'shoot': 0},
+    'asteroidF__aliveT': {'moveT': 0, 'moveF': 0, 'turnR': 0, 'turnL': 0,'thrustL': 0, 'thrustR': 0, 'shoot': 0},
+    'asteroidF__aliveF': {'moveT': 0, 'moveF': 0, 'turnR': 0, 'turnL': 0,'thrustL': 0, 'thrustR': 0, 'shoot': 0},
     }
 
 def get_state(rocks, ships_hit_rocks):
@@ -108,6 +155,7 @@ def get_state(rocks, ships_hit_rocks):
             return 'asteroidF__aliveT'
 
 
+
 def get_max_q(state):
     '''
     Takes a string representing a state and returns the q-values for valid moves
@@ -116,8 +164,14 @@ def get_max_q(state):
         return ['moveT', q_value_dict[state]['moveT']]
     elif q_value_dict[state]['moveT'] < q_value_dict[state]['moveF']:
         return ['moveF', q_value_dict[state]['moveF']]
+
+    elif q_value_dict[state]['turnR'] > q_value_dict[state]['turnL']:
+        return ['turnR', q_value_dict[state]['turnL']]
+    elif q_value_dict[state]['turnR'] < q_value_dict[state]['turnL']:
+        return ['turnR', q_value_dict[state]['turnL']]
+
     else:
-        return random.choice([['moveT', q_value_dict[state]['moveT']], ['moveF', q_value_dict[state]['moveF']]])
+        return random.choice([['moveT', q_value_dict[state]['moveT']], ['moveF', q_value_dict[state]['moveF']],['turnR', q_value_dict[state]['turnL']],['turnR', q_value_dict[state]['turnL']]])
 
 
 
@@ -128,6 +182,7 @@ def q_learning(qkey1, state_prime, discount, max_q):
         # print "key", key, "counter_dict[qkey1]", counter_dict[qkey1]
         total_observations += counter_dict[qkey1][key]
     q_value = 0
+    print state_prime , "STATE PRIME IN Q LEARNING FUNCTION"
     for key in counter_dict[qkey1]:
         t_probability = counter_dict[qkey1][key] / total_observations
         reward_given = reward_dict[state_prime]
@@ -144,4 +199,6 @@ def q_learning(qkey1, state_prime, discount, max_q):
 def set_q_value(value, state_prime, p_action_move):
     # print 'q_value_dict[state_prime][state]', q_value_dict[state_prime][p_action_move]
     q_value_dict[state_prime][p_action_move] += value
+    print q_value_dict[state_prime][p_action_move]
+    print q_value_dict
     # print "p_action_move", p_action_move, "state_prime", state_prime, "value", value, "qval", q_value_dict[state_prime][p_action_move]

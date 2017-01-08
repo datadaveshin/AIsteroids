@@ -26,7 +26,7 @@ WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 10
+TRAINING_RUNS = 3
 
 # Globals for logic
 score = 0
@@ -39,7 +39,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 2
+max_rocks = 8
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -47,8 +47,8 @@ free_lives = False
 extra_lives_set = set([])
 extra_life_multple = 0
 
-state = 'asteroidF__aliveT'
-state_prime = 'asteroidF__aliveT'
+# state = 'asteroidF__aliveT'
+# state_prime = 'asteroidF__aliveT'
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -688,11 +688,27 @@ def keyup(key):
 # initialize ship and two sprites
 my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 
+# 6 pies  1.0472
+def ship_zone(ship_angle):
+    if 0 < ship_angle < 1.0472:
+        return 'zone1'
+    elif 0 < ship_angle < 2.0944
+        return 'zone2'
+    elif 0 < ship_angle < 3.1416
+        return 'zone3'
+    elif 0 < ship_angle < 4.1888
+        return 'zone4'
+    elif 0 < ship_angle < 5.2360
+        return 'zone5'
+    elif 0 < ship_angle < 6.2832
+        return 'zone6'
+
 
 ###### NEW AI STUFF#######
 def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
+    print max_q, "MAX Q"
     if display:
         post_action_move = action2(max_q, my_ship)
         # print "if", display
@@ -702,20 +718,23 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
 
     # print "post_action_move", post_action_move
     # print state + " STATE "
-
+    print post_action_move, "POST ACTION MOVE AI 1"
     return [state, max_q, post_action_move]
 
 def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
-    state_prime = get_state(in_zone2, ship_hit_rocks)
+    state_prime = get_state(in_zone2_part2, ship_hit_rocks_part2)
     # print state_prime + " I AM STATEPRIME \n"
     state = part1_array[0]
     max_q = part1_array[1]
     post_action_move = part1_array[2]
     # print "post_action_move", post_action_move
+    print post_action_move, "POST ACTION MOVE"
+    print state, "I AM THE STATE"
     q_key_1 = state + "__" + post_action_move
     # print q_key_1
     # print q_key_1 + "q key 1"
     q_val = q_learning(q_key_1, state_prime, 0.5, max_q)
+
     set_q_value(q_val , state_prime, post_action_move)
 
 
@@ -750,7 +769,6 @@ for x in xrange(TRAINING_RUNS):
             print "Rocks Destroyed:", score / 100
             print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
 
-
         part1_returned = ai_part1(in_zone2, ship_hit_rocks)
         # print part1_returned, "part 1 AI"
         # state = get_state(in_zone2, ship_hit_rocks)
@@ -763,12 +781,12 @@ for x in xrange(TRAINING_RUNS):
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
         in_zone2 = group_zone(rock_group, my_ship, 1, 100)
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
+        #build state function goes here
 
 
         ai_part2(in_zone2, ship_hit_rocks, part1_returned)
         # state_prime = get_state(in_zone2, ship_hit_rocks)
         # print state + " STATE " + state_prime + " I AM STATEPRIME \n"
-
         if y % 10 == 0:
             rock_spawner()
 
