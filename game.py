@@ -372,26 +372,20 @@ def process_sprite_group_1(a_set, canvas):
 def draw_1():
     global time, started, lives, score, rock_group, life_given
 
-    # animiate background
-    time += 1
-
-    wtime = (time / 4) % WIDTH
-    center = debris_info.get_center()
-    size = debris_info.get_size()
-
+    # Process sprites
     process_sprite_group(rock_group)
     process_sprite_group(missile_group)
     process_sprite_group(explosion_group)
     process_sprite_group(explosion_group_ship)
 
-    # update ship and sprites
+    # Update ship and sprites
     my_ship.update()
 
-    # check for missle/rock collisions
+    # Check for missle/rock collisions
     missiles_hit_rocks = group_group_collide(missile_group, rock_group)
     score += missiles_hit_rocks * 100
 
-    # free lives if score 10,000
+    # Free lives if score 10,000
     if free_lives:
         if score in extra_lives_set and (not life_given):
             lives += 1
@@ -399,7 +393,7 @@ def draw_1():
         elif score not in extra_lives_set:
             life_given = False
 
-    # check for ship/rock collisions
+    # Check for ship/rock collisions
     global ship_hit_rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
     if ship_hit_rocks:
