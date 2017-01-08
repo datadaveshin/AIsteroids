@@ -26,7 +26,6 @@ ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
 TRAINING_ITERATIONS = 1
-STAT_COUNTER = 0
 
 # Globals for logic
 score = 0
@@ -62,7 +61,9 @@ missile_group = set([])
 explosion_group = set([])
 explosion_group_ship = set([])
 
-# Class definitions
+##################
+# IMAGE PROCESSING
+##################
 class ImageInfo:
     '''
     For manipulating images used in the game
@@ -133,9 +134,13 @@ missile_sound.set_volume(.5)
 ship_thrust_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/thrust.ogg")
 explosion_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/explosion.ogg")
 
+#################
+#SHIP AND SPRITES
+#################
 # Helper functions to handle transformations
 def angle_to_vector(ang):
     return [math.cos(ang), math.sin(ang)]
+
 
 def dist(p, q):
     return math.sqrt((p[0] - q[0]) ** 2+(p[1] - q[1]) ** 2)
@@ -293,7 +298,9 @@ class Sprite:
         else:
             return False
 
-
+###################
+# GENERAL FUNCTIONS
+###################
 def click(pos):
     """
     Originally a mouseclick handler that reset UI.
@@ -374,9 +381,12 @@ def print_zone_stats(stat_cnt, z1_cnt, z2_cnt, z3_cnt):
         print "Rocks Destroyed:", score / 100
         print "zone1:", z1_cnt, "zone2:", z2_cnt, "zone3:", z3_cnt
 
-
+#############
+# GAME EVENTS
+#############
 def draw_in_background():
-    global time, started, lives, score, rock_group, life_given
+    global time, started, lives, score, rock_group
+    global ship_hit_rocks
 
     # Process sprites
     process_sprite_group(rock_group)
@@ -392,7 +402,6 @@ def draw_in_background():
     score += missiles_hit_rocks * 100
 
     # Check for ship/rock collisions
-    global ship_hit_rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
     if ship_hit_rocks:
         lives -= 1
@@ -402,7 +411,7 @@ def draw_in_background():
 
 
 def draw(canvas):
-    global time, started, lives, score, rock_group, life_given
+    global time, started, lives, score, rock_group
 
     # Check if rocks in zone
     # in_zone1 = group_zone(rock_group, my_ship, 1, 100)
