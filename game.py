@@ -369,7 +369,6 @@ def process_sprite_group_1(a_set, canvas):
             a_set.remove(item)
 
 
-#@! def draw(canvas):
 def draw_1():
     global time, started, lives, score, rock_group, life_given
 
@@ -379,32 +378,7 @@ def draw_1():
     wtime = (time / 4) % WIDTH
     center = debris_info.get_center()
     size = debris_info.get_size()
-    '''#@!
-    canvas.draw_image(nebula_image, nebula_info.get_center(),
-                      nebula_info.get_size(), [WIDTH / 2, HEIGHT / 2],
-                      [WIDTH, HEIGHT])
-    canvas.draw_image(debris_image, center, size, (
-                      wtime - WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
-    canvas.draw_image(debris_image, center, size, (
-                      wtime + WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
-    '''#@!
 
-    # draw score and lives
-    '''#@!
-    canvas.draw_text("Lives", (WIDTH * 0.25, HEIGHT * 0.1), 28, "White")
-    canvas.draw_text(str(lives), (WIDTH * 0.25, HEIGHT * 0.2), 42, "White")
-    canvas.draw_text("Score", (WIDTH * 0.67, HEIGHT * 0.1), 28, "White")
-    canvas.draw_text(str(score), (WIDTH * 0.67, HEIGHT * 0.2), 42, "White")
-    '''
-
-    # draw ship and sprites
-    #@! my_ship.draw(canvas)
-    '''#@!
-    process_sprite_group(rock_group, canvas)
-    process_sprite_group(missile_group, canvas)
-    process_sprite_group(explosion_group, canvas)
-    process_sprite_group(explosion_group_ship, canvas)
-    '''
     process_sprite_group(rock_group)
     process_sprite_group(missile_group)
     process_sprite_group(explosion_group)
@@ -425,7 +399,6 @@ def draw_1():
         elif score not in extra_lives_set:
             life_given = False
 
-
     # check for ship/rock collisions
     global ship_hit_rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
@@ -435,18 +408,10 @@ def draw_1():
         if lives <= 0:
             started = False
 
-
     # draw splash screen if not started
     if not started:
         rock_group = set([])
         soundtrack.pause()
-        '''#@!
-        canvas.draw_image(splash_image, splash_info.get_center(),
-                          splash_info.get_size(), [WIDTH / 2, HEIGHT / 2],
-                          splash_info.get_size())
-        '''
-
-
 
 
 def draw(canvas):
