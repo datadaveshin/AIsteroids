@@ -1,10 +1,7 @@
 '''
-Has the functions and data structures for dealing with the ai
+Has the functions and data structures for dealing with the AI
 '''
-
 import random
-
-
 
 reward_dict = {
     'asteroidT__aliveT': -2,
@@ -71,18 +68,6 @@ counter_dict = {
 
     }
 
-# print counter_dict['asteroidF__aliveF__moveF']['asteroidT__aliveT']
-# q_value_dict  = {
-#     'asteroidT__aliveT__moveT': 0,
-#     'asteroidT__aliveT__moveF': 0,
-#     'asteroidT__aliveF__moveT': 0,
-#     'asteroidT__aliveF__moveF': 0,
-#     'asteroidF__aliveT__moveT': 0,
-#     'asteroidF__aliveT__moveF': 0,
-#     'asteroidF__aliveF__moveT': 0,
-#     'asteroidF__aliveF__moveF': 0,
-#     }
-
 q_value_dict  = {
     'asteroidT__aliveT': {'moveT': 0, 'moveF': 0},
     'asteroidT__aliveF': {'moveT': 0, 'moveF': 0},
@@ -120,7 +105,6 @@ def get_max_q(state):
         return random.choice([['moveT', q_value_dict[state]['moveT']], ['moveF', q_value_dict[state]['moveF']]])
 
 
-
 def q_learning(qkey1, state_prime, discount, max_q):
     '''
     qkey1: asteroidT__aliveT__moveT
@@ -128,45 +112,26 @@ def q_learning(qkey1, state_prime, discount, max_q):
     discount: 0.5
     max_q: 0
     '''
-    ### print "\n\n\nstate_prime", state_prime
-    # print counter_dict[qkey1][state_prime]
     counter_dict[qkey1][state_prime] += 1
     total_observations = 0.0
+
     for key in counter_dict[qkey1]:
         # print "key", key, "counter_dict[qkey1]", counter_dict[qkey1]
         total_observations += counter_dict[qkey1][key]
     q_value = 0
-    ### print "total_observations", total_observations, "\ncounter_dict[qkey1]", counter_dict[qkey1]
-    ### print state_prime, "q_value_dict before:", q_value_dict[state_prime]
+
     for key in counter_dict[qkey1]:
         t_probability = counter_dict[qkey1][key] / total_observations
         reward_given = reward_dict[state_prime]
         v_star = discount * (max_q[1])
         component = t_probability * (reward_given + v_star)
         q_value += component
-    ### print 'q_value', q_value
-    # print "\naverage", average
-    # reward_given = reward_dict[state_prime]
-    # print "reward_given", reward_given, "max_q1", max_q
-    # print "v_star", v_star
-    # q_value = average * (reward_given + (discount * (max_q[1])))
-    # print 'q_value', q_value
-    # print counter_dict
-
-    # for thing in q_value_dict:
-    #     print thing, q_value_dict[thing], counter_dict[qkey1]
 
     return q_value
 
+
 def set_q_value(value, state_prime, p_action_move):
-    # print 'q_value_dict[state_prime][state]', q_value_dict[state_prime][p_action_move]
-
     q_value_dict[state_prime][p_action_move] = value
-    ### print state_prime, "q_value_dict after:", q_value_dict[state_prime]
-
-    # print value
-    # print "\n", q_value_dict, "\n"
-    # print "p_action_move", p_action_move, "state_prime", state_prime, "value", value, "qval", q_value_dict[state_prime][p_action_move]
 
     print "\n"
     print  'asteroidF__aliveT', q_value_dict['asteroidF__aliveT']
