@@ -24,10 +24,10 @@ except ImportError:
 # Globals for user interface
 WIDTH = 960 #! Normally 800
 HEIGHT = 720 #! Normally 600
-ROCK_SPEED = 1.7 #! For easier control of rock speed for AI experiment
+ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
-TRAINING_RUNS = 1
-TRAINING_ITERATIONS = 1
+TRAINING_RUNS = 10
+TRAINING_ITERATIONS = 10000
 
 # Globals for logic
 score = 0
@@ -40,7 +40,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 30
+max_rocks = 4
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -50,6 +50,7 @@ extra_life_multple = 0
 
 state = 'asteroidF__aliveT'
 state_prime = 'asteroidF__aliveT'
+z = 0
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -704,7 +705,7 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
         post_action_move = action(max_q, my_ship)
         # print "if", display
     else:
-        post_action_move = action(max_q, my_ship)
+        post_action_move = action2(max_q, my_ship)
         # print "else"
 
     # print "post_action_move", post_action_move
@@ -722,7 +723,7 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
     q_key_1 = state + "__" + post_action_move
     # print q_key_1
     # print q_key_1 + "q key 1"
-    q_val = q_learning(q_key_1, state_prime, 0.5, max_q)
+    q_val = q_learning(q_key_1, state_prime, 0.6, max_q)
     set_q_value(q_val , state_prime, post_action_move)
 
 
@@ -783,7 +784,7 @@ for x in xrange(TRAINING_RUNS):
 display = True
 frame = simplegui.create_frame("Asteroids", WIDTH, HEIGHT)
 frame.set_draw_handler(draw)
-timer = simplegui.create_timer(1000.0, rock_spawner)
+timer = simplegui.create_timer(100.0, rock_spawner)
 timer.start()
 frame.start()
 click(pos)
