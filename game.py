@@ -374,6 +374,7 @@ def print_zone_stats(stat_cnt, z1_cnt, z2_cnt, z3_cnt):
         print "Rocks Destroyed:", score / 100
         print "zone1:", z1_cnt, "zone2:", z2_cnt, "zone3:", z3_cnt
 
+
 def draw_in_background():
     global time, started, lives, score, rock_group, life_given
 
@@ -515,7 +516,6 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
 ############
 # START GAME
 ############
-
 # 1. Do one preliminary game loop to set values
 draw_in_background()
 
@@ -548,7 +548,7 @@ for _num in xrange(TRAINING_RUNS):
         ai_part2(in_zone2, ship_hit_rocks, part1_returned)
 
         # Spawn Rocks
-        if y % 10 == 0:
+        if counter % 10 == 0:
             rock_spawner()
 
 # 3. Do online training & visualize results
@@ -558,4 +558,3 @@ frame.set_draw_handler(draw)
 timer = simplegui.create_timer(100.0, rock_spawner)
 timer.start()
 frame.start()
-click(pos)
