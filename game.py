@@ -56,7 +56,6 @@ zone1_count = 0
 zone2_count = 0
 zone3_count = 0
 
-
 # Initialize sets
 rock_group = set([])
 missile_group = set([])
@@ -521,13 +520,13 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
 draw_in_background()
 
 # 2. Do offline training in the background
-for x in xrange(TRAINING_RUNS):
+for _num in xrange(TRAINING_RUNS):
     display = False
     click(pos)
     print "\n\n\n####### game_started #######"
-    y = 0
-    while y < TRAINING_ITERATIONS:
-        y += 1
+    counter = 0
+    while counter < TRAINING_ITERATIONS:
+        counter += 1
 
         # Check if in zone, up counts
         # in_zone1 = group_zone(rock_group, my_ship, 1, 100)
