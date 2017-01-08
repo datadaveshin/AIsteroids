@@ -46,11 +46,16 @@ free_lives = False
 extra_lives_set = set([])
 extra_life_multple = 0
 
-state = 'asteroidF__aliveT'
-state_prime = 'asteroidF__aliveT'
-
+# State Primers
+# state = 'asteroidF__aliveT'
+# state_prime = 'asteroidF__aliveT'
 state = 'asteroidT__aliveT'
 state_prime = 'asteroidT__aliveT'
+
+# Globals for counting
+zone1_count = 0
+zone2_count = 0
+zone3_count = 0
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -371,6 +376,12 @@ def process_sprite_group_1(a_set, canvas):
         if time_to_die:
             a_set.remove(item)
 
+def print_zone_stats(z1_cnt, z2_cnt, z3_cnt):
+    # Count times in zone
+    if y % 100 == 0:
+        print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
+        print "Rocks Destroyed:", score / 100
+        print "zone1:", z1_cnt, "zone2:", z2_cnt, "zone3:", z3_cnt
 
 def draw_1():
     global time, started, lives, score, rock_group, life_given
@@ -408,34 +419,27 @@ def draw_1():
 
 def draw(canvas):
     global time, started, lives, score, rock_group, life_given
-    global zone1_count
-    global zone2_count
-    global zone3_count
+    global zone1_count, zone2_count, zone3_count
 
-    # Check if in zone
+    # Check if in zone, up counts
+    # in_zone1 = group_zone(rock_group, my_ship, 1, 100)
+    in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+    # in_zone3 = group_zone(rock_group, my_ship, 1, 100)
+
+    # Use for printing zone stats
     # if in_zone1:
     #     zone1_count += 1
-    in_zone2 = group_zone(rock_group, my_ship, 1, 100)
     if in_zone2:
         zone2_count += 1
     # if in_zone3:
     #     zone3_count += 1
+    print_zone_stats(zone1_count, zone2_count, zone3_count)
 
-    # Count times in zone
-    if y % 100 == 0:
-        print "\nGame Loops:", y, "Times Killed:", -(lives - 1000)
-        print "Rocks Destroyed:", score / 100
-        print "zone1:", zone1_count, "zone2:", zone2_count, "zone3:", zone3_count
-
+    # Check if ship collides with rocks, do AI part 1
     ship_hit_rocks = group_collide(rock_group, my_ship)
     part1_returned = ai_part1(in_zone2, ship_hit_rocks)
 
-    # print part1_returned, "part 1 AI"
-    # state = get_state(in_zone2, ship_hit_rocks)
-    # max_q = get_max_q(state)
-    # post_action_move = action(max_q, my_ship)
-
-    # animiate background
+    # Animiate background
     time += 1
 
     wtime = (time / 4) % WIDTH
@@ -450,16 +454,13 @@ def draw(canvas):
     canvas.draw_image(debris_image, center, size, (
                       wtime + WIDTH / 2, HEIGHT / 2), (WIDTH, HEIGHT))
 
-
-    # draw score and lives
-
+    # Draw score and lives
     canvas.draw_text("Lives", (WIDTH * 0.25, HEIGHT * 0.1), 28, "White")
     canvas.draw_text(str(lives), (WIDTH * 0.25, HEIGHT * 0.2), 42, "White")
     canvas.draw_text("Score", (WIDTH * 0.67, HEIGHT * 0.1), 28, "White")
     canvas.draw_text(str(score), (WIDTH * 0.67, HEIGHT * 0.2), 42, "White")
 
-
-    # draw ship and sprites
+    # Draw ship and sprites
     my_ship.draw(canvas)
 
     process_sprite_group_1(rock_group, canvas)
@@ -467,21 +468,12 @@ def draw(canvas):
     process_sprite_group_1(explosion_group, canvas)
     process_sprite_group_1(explosion_group_ship, canvas)
 
-    # update ship and sprites
+    # Update ship and sprites
     my_ship.update()
 
-    # check for missle/rock collisions
+    # Check for missle/rock collisions
     missiles_hit_rocks = group_group_collide(missile_group, rock_group)
     score += missiles_hit_rocks * 100
-
-    # free lives if score 10,000
-    if free_lives:
-        if score in extra_lives_set and (not life_given):
-            lives += 1
-            life_given = True
-        elif score not in extra_lives_set:
-            life_given = False
-
 
     # check for ship/rock collisions
     ship_hit_rocks = group_collide(rock_group, my_ship)
@@ -491,49 +483,12 @@ def draw(canvas):
         if lives <= 0:
             started = False
 
-
-    # draw splash screen if not started
-    # if not started:
-    #     rock_group = set([])
-    #     soundtrack.pause()
-    #
-    #     canvas.draw_image(splash_image, splash_info.get_center(),
-    #                       splash_info.get_size(), [WIDTH / 2, HEIGHT / 2],
-    #                       splash_info.get_size())
+    # Get new zone state and call AI part 2
+    in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+    ai_part2(in_zone2, ship_hit_rocks, part1_returned)
 
 
-
-    """ Use this for AI if you want"""
-    # check if rocks are in the ship's zone
-    # rocks_in_zone1 = group_zone(rock_group, my_ship, 2, 50)
-    # rocks_in_zone2 = group_zone(rock_group, my_ship, 51, 100)
-    # rocks_in_zone3 = group_zone(rock_group, my_ship, 101, 150)
-
-
-    if started:
-        """Call your AI code here"""
-        # ai(rocks_in_zone1, rocks_in_zone2, rocks_in_zone3)
-        # ai_part1(in_zone2, ship_hit_rocks)
-        # ai_part2(in_zone2, ship_hit_rocks)
-
-        '''STUFF COPIED OVER'''
-        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
-
-
-
-
-
-
-        # draw_1()
-        #['asteroidF__aliveT', ['moveF', 0], 'moveF']
-        # check if rocks are in the ship's zone
-        # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
-        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
-        # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
-        ai_part2(in_zone2, ship_hit_rocks, part1_returned)
-
-
-# timer handler that spawns a rock
+# Timer handler that spawns a rock
 def rock_spawner():
     global rock_group, score, rock_vel_multiplier_factor
     # rock_vel_multiplier = (score // 1000 + 1) * rock_vel_multiplier_factor
@@ -613,9 +568,7 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
 
 
 draw_1()
-zone1_count = 0
-zone2_count = 0
-zone3_count = 0
+
 for x in xrange(TRAINING_RUNS):
     display = False
     click(pos)

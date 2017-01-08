@@ -80,11 +80,14 @@ def action2(picked_object, my_ship):
     # if combined_component < 100:
     if picked_object[0] == 'moveT':
         # print "q_actionT"
+
+
         q_action = my_ship.thrusters(True)
         if  6.283 < my_ship.angle or my_ship.angle < -6.283:
             my_ship.angle = 0.0
         direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
         my_ship.angle += direction
+
         if direction == 0.1:
             my_ship.shoot()
         return picked_object[0]
