@@ -25,7 +25,7 @@ HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
-TRAINING_ITERATIONS = 1000
+TRAINING_ITERATIONS = 1
 
 # Globals for logic
 score = 0
@@ -38,7 +38,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 4
+max_rocks = 3
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35
@@ -48,6 +48,9 @@ extra_life_multple = 0
 
 state = 'asteroidF__aliveT'
 state_prime = 'asteroidF__aliveT'
+
+state = 'asteroidT__aliveT'
+state_prime = 'asteroidT__aliveT'
 
 while extra_life_multple < 1000000:
     extra_life_multple += 1000
@@ -583,10 +586,10 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
     if display:
-        post_action_move = action(max_q, my_ship)
+        post_action_move = action2(max_q, my_ship)
         # print "if", display
     else:
-        post_action_move = action2(max_q, my_ship)
+        post_action_move = action(max_q, my_ship)
         # print "else"
 
     # print "post_action_move", post_action_move
