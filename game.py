@@ -3,18 +3,12 @@ Game player for AIsteroids
 """
 import math
 import random
-from action import action
-from action import action2
-from qlearning import get_state
-from qlearning import q_learning
-from qlearning import get_max_q
-from qlearning import set_q_value
-
+from action import action, action2
+from qlearning import get_state, q_learning, get_max_q, set_q_value
 try:
     import simplegui
     import codeskulptor
     codeskulptor.set_timeout(120)
-
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
     from SimpleGUICS2Pygame.simplegui_lib_loader import Loader
@@ -135,7 +129,7 @@ ship_thrust_sound = simplegui.load_sound("http://commondatastorage.googleapis.co
 explosion_sound = simplegui.load_sound("http://commondatastorage.googleapis.com/codeskulptor-assets/sounddogs/explosion.ogg")
 
 #################
-#SHIP AND SPRITES
+# SHIP AND SPRITES
 #################
 # Helper functions to handle transformations
 def angle_to_vector(ang):

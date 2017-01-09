@@ -1,21 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @datadaveshin
- Unwatch 2
-  Star 0
- Fork 1 datadaveshin/AIsteroids Private
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Pulse  Graphs  Settings
-Branch: addingTurns Find file Copy pathAIsteroids/testing.py
-4d17665  13 minutes ago
- Michael Liu get_state get_max make_q_dict and make_r_dict
-0 contributors
-RawBlameHistory
-136 lines (118 sloc)  3.75 KB
-
 
 def get_state(killed, scored, in_zone1, in_zone2, in_zone3):
     """
@@ -149,5 +131,3 @@ print obj_reward
 #         print key, obj1[key]
 #
 # printobj(obj)
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
