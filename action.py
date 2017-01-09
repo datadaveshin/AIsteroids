@@ -70,7 +70,7 @@ def action(picked_object, my_ship):
         return 'moveT'
 
         else:
-            random_action = my_ship.thrusters(False)
+            my_ship.thrusters(False)
             return 'moveF'
 
 
