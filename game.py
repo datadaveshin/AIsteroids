@@ -510,7 +510,8 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
 def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
     state_prime = get_state(in_zone2_part2, ship_hit_rocks_part2)
     state = part1_array[0]
-    max_q = part1_array[1]
+    # max_q = part1_array[1]
+    max_q = get_max_q(state_prime)
     post_action_move = part1_array[2]
     q_key_1 = state + "__" + post_action_move
     q_val = q_learning(q_key_1, state_prime, 0.6, max_q)
