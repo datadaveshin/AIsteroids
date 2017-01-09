@@ -19,7 +19,7 @@ HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
-TRAINING_ITERATIONS = 10000
+TRAINING_ITERATIONS = 0
 
 # Globals for logic
 score = 0
@@ -537,7 +537,7 @@ for _num in xrange(TRAINING_RUNS):
         # in_zone3 = group_zone(rock_group, my_ship, 1, 100)
 
         # Do AI part 1
-        print '\n\nship_killed_init', ship_killed_init
+        # print '\n\nship_killed_init', ship_killed_init
         part1_returned = ai_part1(in_zone2, ship_killed_init)
         # Do draw events but in the background
         ship_killed_part1 = draw_in_background()
@@ -548,7 +548,7 @@ for _num in xrange(TRAINING_RUNS):
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
 
         # Do AI part 2
-        print '\n\nship_killed_part1', ship_killed_part1
+        # print '\n\nship_killed_part1', ship_killed_part1
         ai_part2(in_zone2_part2, ship_killed_part1, part1_returned)
 
         # Spawn Rocks

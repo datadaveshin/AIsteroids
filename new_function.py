@@ -27,20 +27,19 @@ def get_max(state):
     return max_q_array
 
 
+# global r_value_dict
+# r_value_dict = {}
 
-
-global r_value_dict
-r_value_dict = {}
 def make_q_dict(state, action):
     """
     Dynamically builds Q dict takes in state and action
     Affects the global obj q_value_dict
     """
-    if state in obj:
-        obj[state][action] = 0
+    if state in q_value_dict:
+        q_value_dict[state][action] = 0
     else:
-        obj[state] = {}
-        obj[state][action] = 0
+        q_value_dict[state] = {}
+        q_value_dict[state][action] = 0
 
 
 def make_r_dict(state):
@@ -80,3 +79,14 @@ def make_r_dict(state):
         #add keys to obj
     else:
             r_value_dict[state] = 0
+
+def make_counter_dict(state1, action1, state_prime1):
+    sa1 = state + "__" + action
+    if sa1 in counter_dict:
+        if state_prime1 in counter_dict[sa1]:
+            counter_dict[sa1][state_prime1] += 1
+        else:
+            counter_dict[sa1][state_prime1] = 0
+    else:
+        counter_dict[sa1] = {}
+        counter_dict[sa1][state_prime1] = 0

@@ -10,6 +10,7 @@ reward_dict = {
     'asteroidF__aliveF': -500
 }
 
+
 counter_dict = {
     'asteroidT__aliveT__moveT': {
                     'asteroidT__aliveT': 0,
@@ -68,12 +69,26 @@ counter_dict = {
 
     }
 
+def make_counter_dict(state1, action1, state_prime1):
+    sa1 = state1 + "__" + action1
+    if sa1 in counter_dict:
+        if state_prime1 in counter_dict[sa1]:
+            counter_dict[sa1][state_prime1] += 1
+        else:
+            counter_dict[sa1][state_prime1] = 0
+    else:
+        counter_dict[sa1] = {}
+        counter_dict[sa1][state_prime1] = 0
+
+
+
 q_value_dict  = {
     'asteroidT__aliveT': {'moveT': 0, 'moveF': 0},
     'asteroidT__aliveF': {'moveT': 0, 'moveF': 0},
     'asteroidF__aliveT': {'moveT': 0, 'moveF': 0},
     'asteroidF__aliveF': {'moveT': 0, 'moveF': 0},
     }
+
 
 def get_state(rocks, ships_hit_rocks):
     '''
