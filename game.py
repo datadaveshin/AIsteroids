@@ -19,7 +19,7 @@ HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
-TRAINING_ITERATIONS = 0
+TRAINING_ITERATIONS = 10000
 
 # Globals for logic
 score = 0
@@ -330,6 +330,7 @@ def group_collide(group, other_object):
                                            explosion_image2, explosion_info,
                                            explosion_sound))
                 return collision
+        return False
 
 
 def group_zone(group, other_object, inner_buff, outer_buff):
@@ -403,6 +404,8 @@ def draw_in_background():
         if lives <= 0:
             started = False
 
+    return ship_hit_rocks
+
 
 def draw(canvas):
     global time, started, lives, score, rock_group
@@ -455,16 +458,13 @@ def draw(canvas):
     score += missiles_hit_rocks * 100
 
     # check for ship/rock collisions
-    ship_hit_rocks = group_collide(rock_group, my_ship)
-    if ship_hit_rocks:
+    ship_hit_rocks2 = group_collide(rock_group, my_ship)
+    if ship_hit_rocks2:
         lives -= 1
-        # check if game over
-        if lives <= 0:
-            started = False
 
     # Get new zone state and call AI part 2
     in_zone2 = group_zone(rock_group, my_ship, 1, 100)
-    ai_part2(in_zone2, ship_hit_rocks, part1_returned)
+    ai_part2(in_zone2, ship_hit_rocks2, part1_returned)
 
 
 def rock_spawner():
@@ -520,7 +520,7 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
 # START GAME
 ############
 # 1. Do one preliminary game loop to set values
-draw_in_background()
+ship_killed_init = draw_in_background()
 
 # 2. Do offline training in the background
 for _num in xrange(TRAINING_RUNS):
@@ -537,18 +537,19 @@ for _num in xrange(TRAINING_RUNS):
         # in_zone3 = group_zone(rock_group, my_ship, 1, 100)
 
         # Do AI part 1
-        part1_returned = ai_part1(in_zone2, ship_hit_rocks)
-
+        print '\n\nship_killed_init', ship_killed_init
+        part1_returned = ai_part1(in_zone2, ship_killed_init)
         # Do draw events but in the background
-        draw_in_background()
+        ship_killed_part1 = draw_in_background()
 
         # Update zone for state, start AI part 2
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
-        in_zone2 = group_zone(rock_group, my_ship, 1, 100)
+        in_zone2_part2 = group_zone(rock_group, my_ship, 1, 100)
         # in_zone3 = group_zone(rock_group, my_ship, 101, 150)
 
         # Do AI part 2
-        ai_part2(in_zone2, ship_hit_rocks, part1_returned)
+        print '\n\nship_killed_part1', ship_killed_part1
+        ai_part2(in_zone2_part2, ship_killed_part1, part1_returned)
 
         # Spawn Rocks
         if counter % 10 == 0:
