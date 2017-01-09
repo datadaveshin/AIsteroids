@@ -32,7 +32,7 @@ pos = [WIDTH / 2, HEIGHT / 2]
 acc = 0.9
 friction = 0.96
 missile_extra_vel = 8
-max_rocks = 3
+max_rocks = 6
 
 rock_spawn_padding = 5
 rock_vel_multiplier_factor = 0.35

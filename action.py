@@ -28,33 +28,47 @@ def action(picked_object, my_ship):
     # if combined_component < 90:
     if in_percent_chance(90):
         if picked_object[0] == 'moveT':
+            # Thrusters
+            if in_percent_chance(50):
+                my_ship.thrusters(True)
+            else:
+                my_ship.thrusters(False)
 
-            my_ship.thrusters(True)
+            # Shooting
+            if in_percent_chance(25):
+                my_ship.shoot()
 
+            # Turning
             if  6.283 < my_ship.angle or my_ship.angle < -6.283:
                 my_ship.angle = 0.0
             direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
             my_ship.angle += direction
 
-            if direction == 0.1:
-                my_ship.shoot()
-            return picked_object[0]
+            return 'moveT'
 
         else:
             q_action = my_ship.thrusters(False)
             return 'moveF'
-    else:
-        random_component = random.randint(0, 100)
-        if random_component < 50:
-            random_action = my_ship.thrusters(True)
 
-            if  6.283 < my_ship.angle or my_ship.angle < -6.283:
-                my_ship.angle = 0.0
-            direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
-            my_ship.angle += direction
-            if direction == 0.1:
-                my_ship.shoot()
-            return 'moveT'
+    else:
+        # Thrusters
+        if in_percent_chance(50):
+            my_ship.thrusters(True)
+        else:
+            my_ship.thrusters(False)
+
+        # Shooting
+        if in_percent_chance(25):
+            my_ship.shoot()
+
+        # Turning
+        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+            my_ship.angle = 0.0
+        direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
+        my_ship.angle += direction
+
+        return 'moveT'
+
         else:
             random_action = my_ship.thrusters(False)
             return 'moveF'
@@ -68,15 +82,24 @@ def action2(picked_object, my_ship):
     '''
     # print "action2"
     if picked_object[0] == 'moveT':
-        q_action = my_ship.thrusters(True)
+        # Thrusters
+        if in_percent_chance(50):
+            my_ship.thrusters(True)
+        else:
+            my_ship.thrusters(False)
+
+        # Shooting
+        if in_percent_chance(25):
+            my_ship.shoot()
+
+        # Turning
         if  6.283 < my_ship.angle or my_ship.angle < -6.283:
             my_ship.angle = 0.0
         direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
         my_ship.angle += direction
 
-        if direction == 0.1:
-            my_ship.shoot()
-        return picked_object[0]
+        return 'moveT'
+
     else:
-        q_action = my_ship.thrusters(False)
+        my_ship.thrusters(False)
         return 'moveF'
