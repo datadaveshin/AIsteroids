@@ -24,7 +24,7 @@ def action(picked_object, my_ship):
     20% of the time, it will be random
     '''
     # print "action 1"
-    if in_percent_chance(98): # Combined component
+    if in_percent_chance(99): # Combined component
         if picked_object[0] == 'moveT':
             # Thrusters
             if in_percent_chance(90):
