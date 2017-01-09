@@ -69,15 +69,17 @@ def make_q_dict(state, action):
     else:
         q_value_dict[state] = {}
         q_value_dict[state][action] = 0
+    print q_value_dict
 
-
-def get_state(killed, scored, in_zone1, in_zone2, in_zone3):
+# def get_state(killed, scored, in_zone1, in_zone2, in_zone3):
+def get_state(killed, scored, in_zone2):
     """
     Builds A string for the STATE
     State is used in all other functions
 
     """
-    string = "killed" + str(killed) + "__" + 'scored' +str(scored) + "__" + "in_zone1" + str(in_zone1) + "__" + "in_zone2" + str(in_zone2) + "__" + "in_zone3" + str(in_zone3)
+    #string = "killed" + str(killed) + "__" + 'scored' +str(scored) + "__" + "in_zone1" + str(in_zone1) + "__" + "in_zone2" + str(in_zone2) + "__" + "in_zone3" + str(in_zone3)
+    string = "killed" + str(killed) + "__" + 'scored' +str(scored) + "__" + "in_zone2" + str(in_zone2)
     return string
 
 def get_max_q(state):

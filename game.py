@@ -41,8 +41,10 @@ lives = LIVES #! For AI setup to easily change number of lives
 # State Primers for testing
 # state = 'asteroidF__aliveT'
 # state_prime = 'asteroidF__aliveT'
-state = 'asteroidT__aliveT'
-state_prime = 'asteroidT__aliveT'
+# state = 'asteroidT__aliveT'
+# state_prime = 'asteroidT__aliveT'
+state = 'killedFalse__scoredFalse__in_zone2False'
+state_prime = 'killedFalse__scoredFalse__in_zone2False'
 
 # Globals for counting
 zone1_count = 0
@@ -395,6 +397,10 @@ def draw_in_background():
     # Check for missle/rock collisions
     missiles_hit_rocks = group_group_collide(missile_group, rock_group)
     score += missiles_hit_rocks * 100
+    if missiles_hit_rocks > 1:
+        scoredA = True
+    else:
+        scoredA = False
 
     # Check for ship/rock collisions
     ship_hit_rocks = group_collide(rock_group, my_ship)
@@ -404,7 +410,7 @@ def draw_in_background():
         if lives <= 0:
             started = False
 
-    return ship_hit_rocks
+    return [ship_hit_rocks, scoredA]
 
 
 def draw(canvas):
@@ -417,9 +423,14 @@ def draw(canvas):
 
     # Check if ship collides with rocks
     ship_hit_rocks = group_collide(rock_group, my_ship)
+    missiles_hit_rocks = group_group_collide(missile_group, rock_group)
+    if missiles_hit_rocks > 1:
+        scored1 = True
+    else:
+        scored1 = False
 
     # Do AI part 1
-    part1_returned = ai_part1(in_zone2, ship_hit_rocks)
+    part1_returned = ai_part1(ship_hit_rocks, scored1, in_zone2)
 
     # Animiate background
     time += 1
@@ -456,6 +467,10 @@ def draw(canvas):
     # Check for missle/rock collisions
     missiles_hit_rocks = group_group_collide(missile_group, rock_group)
     score += missiles_hit_rocks * 100
+    if missiles_hit_rocks > 1:
+        scored2 = True
+    else:
+        scored2 = False
 
     # check for ship/rock collisions
     ship_hit_rocks2 = group_collide(rock_group, my_ship)
@@ -464,7 +479,7 @@ def draw(canvas):
 
     # Get new zone state and call AI part 2
     in_zone2 = group_zone(rock_group, my_ship, 1, 100)
-    ai_part2(in_zone2, ship_hit_rocks2, part1_returned)
+    ai_part2(ship_hit_rocks2, scored2, in_zone2, part1_returned)
 
 
 def rock_spawner():
@@ -498,13 +513,15 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 ##########
 # AI CALLS
 ##########
-def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
-    state = get_state(ship_hit_rocks_part1, in_zone2_part1, '#####')
-    max_q = get_max_q(state)
+def ai_part1(ship_hit_rocks_part1, rock_destroyed_part1, in_zone2_part1,):
+    state = get_state(ship_hit_rocks_part1, rock_destroyed_part1, in_zone2_part1)
     if display:
         post_action_move = action(max_q, my_ship)
     else:
         post_action_move = action(max_q, my_ship)
+    make_q_dict(state, post_action_move)
+    max_q = get_max_q(state)
+    print
     return [state, max_q, post_action_move]
 
 def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
@@ -521,7 +538,9 @@ def ai_part2(in_zone2_part2, ship_hit_rocks_part2, part1_array):
 # START GAME
 ############
 # 1. Do one preliminary game loop to set values
-ship_killed_init = draw_in_background()
+draw_results1 = draw_in_background()
+ship_killed_init = draw_results1[0]
+rock_destroyed_init = draw_results1[0]
 
 # 2. Do offline training in the background
 for _num in xrange(TRAINING_RUNS):
@@ -539,9 +558,11 @@ for _num in xrange(TRAINING_RUNS):
 
         # Do AI part 1
         # print '\n\nship_killed_init', ship_killed_init
-        part1_returned = ai_part1(in_zone2, ship_killed_init)
+        part1_returned = ai_part1(ship_killed_init, rock_destroyed_init, in_zone2)
         # Do draw events but in the background
-        ship_killed_part1 = draw_in_background()
+        draw_results1 = draw_in_background()
+        ship_killed1 = draw_results1[0]
+        rock_destroyed1 = draw_results1[0]
 
         # Update zone for state, start AI part 2
         # in_zone1 = group_zone(rock_group, my_ship, 2, 50)
@@ -550,7 +571,7 @@ for _num in xrange(TRAINING_RUNS):
 
         # Do AI part 2
         # print '\n\nship_killed_part1', ship_killed_part1
-        ai_part2(in_zone2_part2, ship_killed_part1, part1_returned)
+        ai_part2(ship_killed1, rock_destroyed1, in_zone2_part2, part1_returned)
 
         # Spawn Rocks
         if counter % 10 == 0:
