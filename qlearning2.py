@@ -15,9 +15,9 @@ def make_counter_dict(state1, action1, state_prime1):
             counter_dict[sa1][state_prime1] += 1
         else:
             counter_dict[sa1][state_prime1] = 0
-        else:
-            counter_dict[sa1] = {}
-            counter_dict[sa1][state_prime1] = 0
+    else:
+        counter_dict[sa1] = {}
+        counter_dict[sa1][state_prime1] = 0
 
 
 def make_r_dict(state):

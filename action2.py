@@ -49,34 +49,34 @@ def action(picked_object, my_ship):
     else:
         random_component = random.randint(1, 7)
         # print "random_component", random_component
-        if random_component = 1:
+        if random_component == 1:
             # print "r_actionT"
             random_action = my_ship.thrusters(True)
             return 'moveT'
-        elif random_component = 2:
+        elif random_component == 2:
             # print "r_actionF"
             my_ship.thrusters(False)
             return 'moveF'
             #turn right
-        elif random_component = 3:
+        elif random_component == 3:
             my_ship.angle += 0.4
             my_ship.thrusters(False)
 
             return 'turnR'
             #turn left
-        elif random_component = 4:
+        elif random_component == 4:
             my_ship.angle -= 0.4
             my_ship.thrusters(False)
             return 'turnL'
-        elif random_component = 5:
+        elif random_component == 5:
             my_ship.angle += 0.4
             my_ship.thrusters(True)
             return 'thrustR'
-        elif random_component = 6:
+        elif random_component == 6:
             my_ship.angle -= 0.4
             my_ship.thrusters(True)
             return 'thrustL'
-        elif random_component = 4:
+        elif random_component == 4:
             my_ship.shoot()
             return 'thrustR'
 

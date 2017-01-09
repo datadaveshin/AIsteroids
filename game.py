@@ -3,8 +3,8 @@ Game player for AIsteroids
 """
 import math
 import random
-from action import action, action2
-from qlearning import get_state, q_learning, get_max_q, set_q_value
+from action2 import action, action2
+from qlearning2 import get_state, q_learning, get_max_q, set_q_value
 try:
     import simplegui
     import codeskulptor
@@ -499,7 +499,7 @@ my_ship = Ship([WIDTH / 2, HEIGHT / 2], [0, 0], 0, ship_image, ship_info)
 # AI CALLS
 ##########
 def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
-    state = get_state(in_zone2_part1, ship_hit_rocks_part1)
+    state = get_state(ship_hit_rocks_part1, in_zone2_part1, '#####')
     max_q = get_max_q(state)
     if display:
         post_action_move = action(max_q, my_ship)
