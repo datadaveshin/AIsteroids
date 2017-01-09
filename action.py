@@ -24,12 +24,10 @@ def action(picked_object, my_ship):
     20% of the time, it will be random
     '''
     # print "action 1"
-    # combined_component = random.randint(0, 100)
-    # if combined_component < 90:
-    if in_percent_chance(90):
+    if in_percent_chance(98): # Combined component
         if picked_object[0] == 'moveT':
             # Thrusters
-            if in_percent_chance(50):
+            if in_percent_chance(90):
                 my_ship.thrusters(True)
             else:
                 my_ship.thrusters(False)
@@ -51,24 +49,24 @@ def action(picked_object, my_ship):
             return 'moveF'
 
     else:
-        # Thrusters
-        if in_percent_chance(50):
-            my_ship.thrusters(True)
-        else:
-            my_ship.thrusters(False)
+        if in_percent_chance(30): # Random component
+            # Thrusters
+            if in_percent_chance(50):
+                my_ship.thrusters(True)
+            else:
+                my_ship.thrusters(False)
 
-        # Shooting
-        if in_percent_chance(25):
-            my_ship.shoot()
+            # Shooting
+            if in_percent_chance(25):
+                my_ship.shoot()
 
-        # Turning
-        if  6.283 < my_ship.angle or my_ship.angle < -6.283:
-            my_ship.angle = 0.0
-        direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
-        my_ship.angle += direction
+            # Turning
+            if  6.283 < my_ship.angle or my_ship.angle < -6.283:
+                my_ship.angle = 0.0
+            direction = random.choice([-0.15,-0.1,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.15,0.15])
+            my_ship.angle += direction
 
-        return 'moveT'
-
+            return 'moveT'
         else:
             my_ship.thrusters(False)
             return 'moveF'

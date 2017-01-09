@@ -19,7 +19,7 @@ HEIGHT = 720 #! Normally 600
 ROCK_SPEED = 1.5 #! For easier control of rock speed for AI experiment
 LIVES = 1000 #! Normally 3
 TRAINING_RUNS = 1
-TRAINING_ITERATIONS = 1
+TRAINING_ITERATIONS = 0
 
 # Globals for logic
 score = 0
@@ -502,7 +502,7 @@ def ai_part1(in_zone2_part1, ship_hit_rocks_part1):
     state = get_state(in_zone2_part1, ship_hit_rocks_part1)
     max_q = get_max_q(state)
     if display:
-        post_action_move = action2(max_q, my_ship)
+        post_action_move = action(max_q, my_ship)
     else:
         post_action_move = action(max_q, my_ship)
     return [state, max_q, post_action_move]
