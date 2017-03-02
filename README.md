@@ -11,9 +11,5 @@ The game itself was created in Python as part of a class from Rice University, a
 - An Introduction to Interactive Programming in Python from Rice University / Coursera
 
 ### Developers
-Michael Liu 
-- [GitHub](https://github.com/mikey084)
-- [LinkedIn](https://www.linkedin.com/in/michael-liu-b07446b5/)
-David Shin 
-- [GitHub](https://github.com/datadaveshin/)
-- [LinkedIn](https://www.linkedin.com/in/davidshin1/)
+- Michael Liu [GitHub](https://github.com/mikey084) [LinkedIn](https://www.linkedin.com/in/michael-liu-b07446b5/)
+- David Shin [GitHub](https://github.com/datadaveshin/) [LinkedIn](https://www.linkedin.com/in/davidshin1/)
